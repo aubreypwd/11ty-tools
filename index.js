@@ -1,15 +1,51 @@
 const path = require( 'path' );
 const markdownIt = require( 'markdown-it' );
 
+const fs = require( 'fs' );
+const crypto = require( 'crypto' );
+
+const shortcodeSignatures = [];
+
 module.exports = function ( eleventyConfig, options = {} ) {
 
 	// Add a markdown filter.
 	eleventyConfig.addFilter( 'markdown', content => new markdownIt( { html: true } ).render( String( content ) ) );
 
-	// Refresh anytime things change...
+	// When things change...
 	eleventyConfig.addWatchTarget( __dirname );
-	eleventyConfig.on( 'eleventy.before', () => delete require.cache[ require.resolve( __filename ) ] );
 
-	// Shortcodes.
-	eleventyConfig.addShortcode( 'test', require( './shortcodes/test.js' ) );
+	( // Get everything in ./shortcodes/*.js...
+		fs.readdirSync( path.join( __dirname, 'shortcodes/' ) )
+			.filter( file => file.endsWith( '.js' ) )
+			.map( file => path.join( __dirname, 'shortcodes/', file ) )
+	).forEach( ( shortcode ) => {
+
+		// Initially load of the shortcode...
+		require( shortcode )( eleventyConfig );
+
+		// When things change, reload the shortcode into 11ty if it's changed...
+		eleventyConfig.on( 'eleventy.before', () => {
+
+			// Get a signature for the shortcode file...
+			shorcodeSignature = crypto
+				.createHash( 'md5' )
+				.update( fs.readFileSync( require.resolve( shortcode ) ) )
+				.digest( 'hex' );
+
+			// If the shortcode file signature didn't change...
+			if ( shorcodeSignature === shortcodeSignatures[ require.resolve( shortcode ) ] ) {
+				return; // Don't trigger a rebuild.
+			}
+
+			// Re-reload the shortcode into memory.
+			require( shortcode )( eleventyConfig );
+
+			// Trigger a rebuild by touching the config file.
+			fs.utimesSync( options.configFile, new Date(), new Date() );
+
+			// Update the shortcode signature for next time.
+			shortcodeSignatures[ require.resolve( shortcode ) ] = shorcodeSignature;
+		} );
+
+	} );
 };

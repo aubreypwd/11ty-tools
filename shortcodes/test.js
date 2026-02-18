@@ -1,1 +1,3 @@
-module.exports = () => `This is a test 5.`;
+module.exports = ( eleventyConfig ) => {
+	eleventyConfig.addShortcode( 'test', () => `This is a <strong>shortstrong</code> test.` );
+};
