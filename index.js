@@ -46,6 +46,5 @@ module.exports = function ( eleventyConfig, options = {} ) {
 			// Update the shortcode signature for next time.
 			shortcodeSignatures[ require.resolve( shortcode ) ] = shorcodeSignature;
 		} );
-
 	} );
 };

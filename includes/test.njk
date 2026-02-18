@@ -1,1 +1,9 @@
-<p>Include me using <code style="background-color: #eee">&#123;&#37; include '11ty-tools/test.html' &#37;&#125;</code>, and you should see me.</p>
+<p>
+	Include me using <code style="background-color: #eee">&#123;&#37; include '11ty-tools/test.html' &#37;&#125;</code>, and you should see me.
+
+	{% if test %}
+		{{ test | safe }}
+	{% else %}
+		Add frontmatter <code>test</code> to test passing data into this include.
+	{% endif %}
+</p>
