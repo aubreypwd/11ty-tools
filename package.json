@@ -14,5 +14,7 @@
   "author": "Aubrey Portwood",
   "type": "commonjs",
   "main": "index.js",
-  "devDependencies": {}
+  "dependencies": {
+    "markdown-it": "^14.1.1"
+  }
 }
