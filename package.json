@@ -13,8 +13,5 @@
   "license": "UNLICENSED",
   "author": "Aubrey Portwood",
   "type": "commonjs",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  "devDependencies": {}
 }
