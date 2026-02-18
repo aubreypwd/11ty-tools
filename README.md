@@ -16,3 +16,9 @@ Or add a `postinstall` script:
 ```
 
 Run `npm i` and you will get the tools. Keep them up to date using `git pull`.
+
+You may have to add:
+
+```js
+eleventyConfig.addWatchTarget( path.join( __dirname, '_includes/11ty-tools/*.{njk,html,liquid,md}' ) );
+```
