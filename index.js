@@ -4,7 +4,8 @@ const markdownIt = require( 'markdown-it' );
 const fs = require( 'fs' );
 const crypto = require( 'crypto' );
 
-const shortcodeSignatures = [];
+const os = require("os");
+
 
 module.exports = function ( eleventyConfig, options = {} ) {
 
@@ -32,8 +33,14 @@ module.exports = function ( eleventyConfig, options = {} ) {
 				.update( fs.readFileSync( require.resolve( shortcode ) ) )
 				.digest( 'hex' );
 
+			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', `${ require( 'path' ).basename( shortcode ) }.sig` );
+
 			// If the shortcode file signature didn't change...
-			if ( shorcodeSignature === shortcodeSignatures[ require.resolve( shortcode ) ] ) {
+			if (
+				shorcodeSignature === ( fs.existsSync( sigFile )
+					? fs.readFileSync( sigFile, 'utf8' )
+					: '' )
+			) {
 				return; // Don't trigger a rebuild.
 			}
 
@@ -44,7 +51,11 @@ module.exports = function ( eleventyConfig, options = {} ) {
 			fs.utimesSync( options.configFile, new Date(), new Date() );
 
 			// Update the shortcode signature for next time.
-			shortcodeSignatures[ require.resolve( shortcode ) ] = shorcodeSignature;
+			fs.mkdirSync( require( 'path' ).dirname( sigFile ), { recursive: true });
+			fs.writeFileSync( sigFile, shorcodeSignature );
 		} );
 	} );
+
+
+
 };
