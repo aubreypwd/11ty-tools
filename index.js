@@ -33,7 +33,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 				.update( fs.readFileSync( require.resolve( shortcode ) ) )
 				.digest( 'hex' );
 
-			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', `${ require( 'path' ).basename( shortcode ) }.sig` );
+			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', `${ path.basename( shortcode ) }.sig` );
 
 			// If the shortcode file signature didn't change...
 			if (
@@ -51,7 +51,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 			fs.utimesSync( options.configFile, new Date(), new Date() );
 
 			// Update the shortcode signature for next time.
-			fs.mkdirSync( require( 'path' ).dirname( sigFile ), { recursive: true });
+			fs.mkdirSync( path.dirname( sigFile ), { recursive: true });
 			fs.writeFileSync( sigFile, shorcodeSignature );
 		} );
 	} );
