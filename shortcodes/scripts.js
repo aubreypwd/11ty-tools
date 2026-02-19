@@ -144,7 +144,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		} );
 
 	} else if ( filteredScripts.length ) {
-		eleventyConfig.logger.warn( '[11ty-tools, script.js] Bundled external JS exists, but no options.bundle.file set.' );
+		eleventyConfig.logger.warn( '11ty-tools: Bundled external JS exists, but no options.bundle.file set.' );
 	}
 
 	tags.forEach( tag => {
