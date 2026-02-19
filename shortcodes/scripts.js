@@ -52,29 +52,25 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		options.minify ?? {}
 	);
 
-	let filteredScripts = [], minified = null;
+	let filteredScripts = [], minified = null, out = '';
 
 	// Scripts that are inline and bundled: Combine all the scripts into a single inline tag (this gets the actual code from the scripts).
 	filteredScripts = scripts.filter( script => script.inline && script.bundle ).map( script => fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' ) );
 
 	if ( filteredScripts.length ) {
 
-		// A single <script>...</script> with all bundled scripts inlined.
 		minified = await minify( await babelify( filteredScripts ), minifyOptions );
-
-		tags.push( { inline: minified.code ?? '/* NO CODE */' } );
+			tags.push( { inline: minified.code ?? '/* NO CODE */' } );
 	}
 
 	// Scripts that are inline but not bundled: Get their own <script> inline tag (this too also gets the script code from the scripts).
 	filteredScripts = scripts.filter( script => script.inline && ! script.bundle ).map( script => fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' ) );
 
 	if ( filteredScripts.length ) {
-
 		for ( const script of filteredScripts ) {
 
 			minified = await minify( await babelify( script ), minifyOptions );
-
-			tags.push( { inline: minified.code ?? '/* NO CODE */' } );
+				tags.push( { inline: minified.code ?? '/* NO CODE */' } );
 		}
 	}
 
@@ -82,15 +78,11 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	filteredScripts = scripts.filter( script => ! script.inline && ! script.bundle );
 
 	if ( filteredScripts.length ) {
-
 		for ( const script of filteredScripts ) {
 
 			minified = await minify( await babelify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) ) );
 
-			const outfile = path.resolve(
-				eleventyConfig.dir.output,
-				script.src
-			);
+			const outfile = path.resolve( eleventyConfig.dir.output, script.src );
 
 			fs.mkdirSync( path.dirname( outfile ), { recursive: true } );
 			fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
@@ -111,27 +103,19 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		// A single .js file with all the bundled scripts in it.
 		minified = await minify( await babelify( filteredScripts ), minifyOptions );
 
-		const outfile = path.join(
-			eleventyConfig.dir.output,
-			options.output ?? 'assets/js',
-			options.bundle.file
-		);
+		const outfile = path.join( eleventyConfig.dir.output, options.output ?? 'assets/js', options.bundle.file );
 
 		fs.mkdirSync( path.dirname( outfile ), { recursive: true } );
 		fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
 
 		tags.push( {
 			src: path.join( options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
-
-			// If you do not pass bundle.defer we'll assume you don't want to defer it.
-			defer: options.bundle.defer ?? false
+			defer: options.bundle.defer ?? false // If you do not pass bundle.defer we'll assume you don't want to defer it.
 		} );
+
 	} else if ( filteredScripts.length ) {
 		eleventyConfig.logger.warn( '[11ty-tools, script.js] Bundled external JS exists, but no options.bundle.file set.' );
 	}
-
-	// Output.
-	let out = '';
 
 	tags.forEach( tag => {
 		if ( tag.inline ) out += /* html */ `<script>${tag.inline}</script>`;
@@ -139,5 +123,4 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	} );
 
 	return out;
-
 } );
