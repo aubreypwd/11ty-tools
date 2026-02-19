@@ -10,6 +10,25 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	}
 
 	/**
+	 * Get a scripts code.
+	 *
+	 * This will accept a .src that is a URL and fetch the response.
+	 *
+	 * @param {Object} script The script object.
+	 *
+	 * @return {string} The code.
+	 */
+	async function getScriptCode( script ) {
+
+		if ( /^https?:\/\//.test( script.src ) ) {
+			const response = await fetch( script.src );
+				return response.text();
+		}
+
+		return fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' );
+	}
+
+	/**
 	 * Transpile code with Babel.
 	 *
 	 * @param {string} code The code.
@@ -55,7 +74,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	let filteredScripts = [], minified = null, out = '';
 
 	// Scripts that are inline and bundled: Combine all the scripts into a single inline tag (this gets the actual code from the scripts).
-	filteredScripts = scripts.filter( script => script.inline && script.bundle ).map( script => fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' ) );
+	filteredScripts = await Promise.all( scripts.filter( script => script.inline && script.bundle ).map( script => getScriptCode( script ) ) );
 
 	if ( filteredScripts.length ) {
 
@@ -64,7 +83,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	}
 
 	// Scripts that are inline but not bundled: Get their own <script> inline tag (this too also gets the script code from the scripts).
-	filteredScripts = scripts.filter( script => script.inline && ! script.bundle ).map( script => fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' ) );
+	filteredScripts = await Promise.all( scripts.filter( script => script.inline && ! script.bundle ).map( script => getScriptCode( script ) ) );
 
 	if ( filteredScripts.length ) {
 		for ( const script of filteredScripts ) {
@@ -80,7 +99,9 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	if ( filteredScripts.length ) {
 		for ( const script of filteredScripts ) {
 
-			minified = await minify( await babelify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) ) );
+			const code = await getScriptCode( script );
+
+			minified = await minify( await babelify( code ) );
 
 			const outfile = path.resolve( eleventyConfig.dir.output, script.src );
 
@@ -96,7 +117,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	}
 
 	// Scripts that are not inlined and bundled (this also reads in the code from all the scripts).
-	filteredScripts = scripts.filter( script => ! script.inline && script.bundle ).map( script => fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' ) );
+	filteredScripts = await Promise.all( scripts.filter( script => ! script.inline && script.bundle ).map( script => getScriptCode( script ) ) );
 
 	if ( filteredScripts.length && options.bundle.file ) {
 
