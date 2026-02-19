@@ -101,15 +101,23 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 			const code = await getScriptCode( script );
 
+			const src = /^https?:\/\//.test( script.src )
+
+				// Point to the new file in the filesystem (assumes assets/js).
+				? path.join( script.file ?? 'assets/js', path.basename( new URL( script.src ).pathname ) )
+
+				// Keep the original src.
+				: script.src;
+
 			minified = await minify( await babelify( code ) );
 
-			const outfile = path.resolve( eleventyConfig.dir.output, script.src );
+			const outfile = path.resolve( eleventyConfig.dir.output, src );
 
 			fs.mkdirSync( path.dirname( outfile ), { recursive: true } );
 			fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
 
 			tags.push( {
-				src: script.src,
+				src: path.join( eleventyConfig.pathPrefix, src ),
 				defer: script.defer ?? false,
 				async: script.async ?? false
 			} );
@@ -130,7 +138,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
 
 		tags.push( {
-			src: path.join( options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
+			src: path.join( eleventyConfig.pathPrefix, options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
 			defer: options.bundle.defer ?? false // If you do not pass bundle.defer we'll assume you don't want to defer it.
 		} );
 
