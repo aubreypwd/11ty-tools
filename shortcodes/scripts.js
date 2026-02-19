@@ -20,7 +20,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	 */
 	async function getScriptCode( script ) {
 
-		if ( /^https?:\/\//.test( script.src ) ) {
+		if ( /^https?:\/\//.test( script.src ?? '' ) ) {
 			const response = await fetch( script.src );
 				return response.text();
 		}
@@ -78,7 +78,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 	if ( filteredScripts.length ) {
 
-		minified = await minify( await babelify( filteredScripts ), minifyOptions );
+		minified = await minify( script.babel ? await babelify( filteredScripts ) : filteredScripts, minifyOptions );
 			tags.push( { inline: minified.code ?? '/* NO CODE */' } );
 	}
 
@@ -88,7 +88,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	if ( filteredScripts.length ) {
 		for ( const script of filteredScripts ) {
 
-			minified = await minify( await babelify( script ), minifyOptions );
+			minified = await minify( script.babel ? await babelify( script ) : script, minifyOptions );
 				tags.push( { inline: minified.code ?? '/* NO CODE */' } );
 		}
 	}
@@ -101,7 +101,9 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 			const code = await getScriptCode( script );
 
-			const src = /^https?:\/\//.test( script.src )
+			minified = await minify( script.babel ? await babelify( code ) : code );
+
+			const newSrc = /^https?:\/\//.test( script.src )
 
 				// Point to the new file in the filesystem (assumes assets/js).
 				? path.join( script.file ?? 'assets/js', path.basename( new URL( script.src ).pathname ) )
@@ -109,15 +111,14 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 				// Keep the original src.
 				: script.src;
 
-			minified = await minify( await babelify( code ) );
 
-			const outfile = path.resolve( eleventyConfig.dir.output, src );
+			const outfile = path.resolve( eleventyConfig.dir.output, newSrc );
 
 			fs.mkdirSync( path.dirname( outfile ), { recursive: true } );
 			fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
 
 			tags.push( {
-				src: path.join( eleventyConfig.pathPrefix, src ),
+				src: path.join( eleventyConfig.pathPrefix, newSrc ),
 				defer: script.defer ?? false,
 				async: script.async ?? false
 			} );
