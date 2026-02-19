@@ -37,9 +37,9 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 	if ( filteredScripts.length ) {
 
 		// A single <script>...</script> with all bundled scripts inlined.
-		minified = await minify( filteredScripts, minifyOptions );
+		// minified = await minify( filteredScripts, minifyOptions );
 
-		tags.push( { inline: minified.code ?? '/* NO CODE */' } );
+		tags.push( { inline: await minify( filteredScripts, minifyOptions ).code ?? '/* NO CODE */' } );
 	}
 
 	// Scripts that are inline but not bundled: Get their own <script> inline tag (this too also gets the script code from the scripts).
@@ -49,9 +49,9 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 
 		for ( const script of filteredScripts ) {
 
-			minified = await minify( script, minifyOptions );
+			// minified = await minify( script, minifyOptions );
 
-			tags.push( { inline: minified.code ?? '/* NO CODE */' } );
+			tags.push( { inline: await minify( script, minifyOptions ).code ?? '/* NO CODE */' } );
 		}
 	}
 
@@ -62,7 +62,7 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 
 		for ( const script of filteredScripts ) {
 
-			minified = await minify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) );
+			// minified = await minify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) );
 
 			const outfile = path.resolve(
 				eleventyConfig.dir.output,
@@ -70,7 +70,7 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 			);
 
 			fs.mkdirSync( path.dirname( outfile ), { recursive: true } );
-			fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
+			fs.writeFileSync( outfile, await minify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) ).code ?? '/* NO CODE */' );
 
 			tags.push( {
 				src: script.src,
@@ -86,7 +86,7 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 	if ( filteredScripts.length && options.bundle.file ) {
 
 		// A single .js file with all the bundled scripts in it.
-		minified = await minify( filteredScripts, minifyOptions );
+		// minified = await minify( filteredScripts, minifyOptions );
 
 		const outfile = path.join(
 			eleventyConfig.dir.output,
@@ -95,7 +95,7 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 		);
 
 		fs.mkdirSync( path.dirname( outfile ), { recursive: true } );
-		fs.writeFileSync( outfile, minified.code ?? '/* NO CODE */' );
+		fs.writeFileSync( outfile, await minify( filteredScripts, minifyOptions ).code ?? '/* NO CODE */' );
 
 		tags.push( {
 			src: path.join( options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
