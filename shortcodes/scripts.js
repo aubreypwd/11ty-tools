@@ -2,16 +2,11 @@ const path = require( 'path' );
 const fs = require( 'fs' );
 const { minify } = require( 'terser' );
 
-module.exports = ( eleventyConfig ) =>
-
-eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], options = {} ) {
+module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], options = {} ) {
 
 	if ( [] === scripts ) {
-		return;
+		return; // No scripts, let's not waste out time.
 	}
-
-	// Yes, we will assume assets/js.
-	eleventyConfig.addWatchTarget( options.output ?? 'assets/js' );
 
 	const tags = []; // These get pushed out later.
 
@@ -108,8 +103,6 @@ eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], optio
 
 	// Output.
 	let out = '';
-
-	console.log( tags );
 
 	tags.forEach( tag => {
 		if ( tag.inline ) out += /* html */ `<script>${tag.inline}</script>`;
