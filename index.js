@@ -6,7 +6,6 @@ const crypto = require( 'crypto' );
 
 const os = require("os");
 
-
 module.exports = function ( eleventyConfig, options = {} ) {
 
 	// Add a markdown filter.

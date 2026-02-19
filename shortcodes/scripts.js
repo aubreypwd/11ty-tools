@@ -1,12 +1,41 @@
 const path = require( 'path' );
 const fs = require( 'fs' );
 const { minify } = require( 'terser' );
+const babel = require( '@babel/core' );
 
 module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], options = {} ) {
 
 	if ( [] === scripts ) {
 		return; // No scripts, let's not waste out time.
 	}
+
+	/**
+	 * Transpile code with Babel.
+	 *
+	 * @param {string} code The code.
+	 * @return {string}
+	 */
+	async function babelify( code ) {
+
+		const result = await babel.transformAsync( code, Object.assign(
+			{
+				presets: [
+					[
+						'@babel/preset-env',
+						{
+							targets: '> 0.25%, not dead'
+						}
+					]
+				],
+				minified: false,
+				comments: false
+			},
+			options.babel ?? {}
+		) );
+
+		return result.code;
+	}
+
 
 	const tags = []; // These get pushed out later.
 
@@ -15,12 +44,12 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		{
 			compress: true,
 			mangle: true,
-			ecma: 2018,
+			ecma: 2017,
 			format: {
 				comments: false
 			}
 		},
-		minify.options ?? {}
+		options.minify ?? {}
 	);
 
 	let filteredScripts = [], minified = null;
@@ -31,7 +60,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	if ( filteredScripts.length ) {
 
 		// A single <script>...</script> with all bundled scripts inlined.
-		minified = await minify( filteredScripts, minifyOptions );
+		minified = await minify( await babelify( filteredScripts ), minifyOptions );
 
 		tags.push( { inline: minified.code ?? '/* NO CODE */' } );
 	}
@@ -43,7 +72,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 		for ( const script of filteredScripts ) {
 
-			minified = await minify( script, minifyOptions );
+			minified = await minify( await babelify( script ), minifyOptions );
 
 			tags.push( { inline: minified.code ?? '/* NO CODE */' } );
 		}
@@ -56,7 +85,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 		for ( const script of filteredScripts ) {
 
-			minified = await minify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) );
+			minified = await minify( await babelify( fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf-8' ) ) );
 
 			const outfile = path.resolve(
 				eleventyConfig.dir.output,
@@ -80,7 +109,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	if ( filteredScripts.length && options.bundle.file ) {
 
 		// A single .js file with all the bundled scripts in it.
-		minified = await minify( filteredScripts, minifyOptions );
+		minified = await minify( await babelify( filteredScripts ), minifyOptions );
 
 		const outfile = path.join(
 			eleventyConfig.dir.output,
