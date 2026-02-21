@@ -32,7 +32,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 				.update( fs.readFileSync( require.resolve( shortcode ) ) )
 				.digest( 'hex' );
 
-			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', `${ path.basename( shortcode ) }.sig` );
+			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', 'shortcodeCache', `${ crypto.createHash( 'md5' ).update( path.basename( shortcode ) ).digest( 'hex' ) }.cache` );
 
 			// If the shortcode file signature didn't change...
 			if (
