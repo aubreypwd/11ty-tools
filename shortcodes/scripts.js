@@ -2,6 +2,7 @@ const path = require( 'path' );
 const fs = require( 'fs' );
 const { minify } = require( 'terser' );
 const babel = require( '@babel/core' );
+const crypto = require('crypto');
 
 module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], options = {} ) {
 
@@ -20,12 +21,31 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	 */
 	async function getScriptCode( script ) {
 
+		// URL script sent.
 		if ( /^https?:\/\//.test( script.src ?? '' ) ) {
+
+			const fileSignature = crypto.createHash( 'md5' ).update( script.src ).digest( 'hex' );
+
+			const maybeCachedFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', getScriptCode.name, `${ fileSignature }.cache` );
+
+			if ( fs.existsSync( maybeCachedFile ) ) {
+				return `${ fs.readFileSync( maybeCachedFile, 'utf8' ) }\n\n`;
+			}
+
+			// Fetch the code and write it to the cache.
 			const response = await fetch( script.src );
-				return response.text();
+
+			return response.text().then( ( code ) => {
+
+				fs.mkdirSync( path.dirname( maybeCachedFile ), { recursive: true } );
+				fs.writeFileSync( maybeCachedFile, code );
+
+				return code;
+			} );
 		}
 
-		return fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' );
+		// Use local file instead.
+		return `${ fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' ) }\n\n`;
 	}
 
 	/**
@@ -55,7 +75,6 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		return result.code;
 	}
 
-
 	const tags = []; // These get pushed out later.
 
 	// Minify options defaults.
@@ -74,7 +93,15 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	let filteredScripts = [], minified = null, out = '';
 
 	// Scripts that are inline and bundled: Combine all the scripts into a single inline tag (this gets the actual code from the scripts).
-	filteredScripts = await Promise.all( scripts.filter( script => script.inline && script.bundle ).map( script => getScriptCode( script ) ) );
+	filteredScripts = await Promise.all(
+
+		// All inlined and bundled scripts.
+		scripts.filter( script => script.inline && script.bundle ).map(
+
+			// Get the code for each.
+			script => getScriptCode( script )
+		)
+	);
 
 	if ( filteredScripts.length ) {
 
@@ -93,7 +120,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		}
 	}
 
-	// Scripts that are not inline and not bundled: Get their own <script src> tag.
+	// Scripts (objects) that are not inline and not bundled: Get their own <script src> tag.
 	filteredScripts = scripts.filter( script => ! script.inline && ! script.bundle );
 
 	if ( filteredScripts.length ) {
@@ -101,14 +128,15 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 			const code = await getScriptCode( script );
 
-			minified = await minify( script.babel ? await babelify( code ) : code );
+			minified = await minify( script.babel ? await babelify( code ) : code, minifyOptions );
 
+			// Construct a local SRC if it's a URL.
 			const newSrc = /^https?:\/\//.test( script.src )
 
 				// Point to the new file in the filesystem (assumes assets/js).
 				? path.join( script.file ?? 'assets/js', path.basename( new URL( script.src ).pathname ) )
 
-				// Keep the original src.
+				// Keep the original (local) src.
 				: script.src;
 
 
@@ -126,8 +154,15 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	}
 
 	// Scripts that are not inlined and bundled (this also reads in the code from all the scripts).
-	filteredScripts = await Promise.all( scripts.filter( script => ! script.inline && script.bundle ).map( script => getScriptCode( script ) ) );
+	filteredScripts = await Promise.all(
 
+		// Ass scripts thare are note inline, but bundled (file)...
+		scripts.filter( script => ! script.inline && script.bundle ).map(
+			script => getScriptCode( script )
+		)
+	);
+
+	// You must supply options.bundle.file so we know where to put the file.
 	if ( filteredScripts.length && options.bundle.file ) {
 
 		// A single .js file with all the bundled scripts in it.
@@ -144,11 +179,15 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		} );
 
 	} else if ( filteredScripts.length ) {
-		eleventyConfig.logger.warn( '11ty-tools: Bundled external JS exists, but no options.bundle.file set.' );
+		eleventyConfig.logger.warn( '[11ty-tools] Bundled external JS exists, but no options.bundle.file set.' );
 	}
 
 	tags.forEach( tag => {
+
+		// Inline script tags.
 		if ( tag.inline ) out += /* html */ `<script>${tag.inline}</script>`;
+
+		// External scripts tagss.
 		if ( tag.src ) out += /* html */ `<script src="${tag.src}"${tag.defer ? ' defer' : ''}${tag.async ? ' async' : ''}></script>`;
 	} );
 
