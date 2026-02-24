@@ -18,6 +18,8 @@
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
     "markdown-it": "^14.1.1",
+    "schemaorg-jsd": "^0.17.1",
+    "structured-data-testing-tool": "^4.5.0",
     "terser": "^5.46.0"
   }
 }
