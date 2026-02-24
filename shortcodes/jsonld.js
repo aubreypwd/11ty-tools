@@ -7,7 +7,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 	// Normalize the object.
 	data = Object.assign(
 		data,
-				{
+		{
 			'@context': "https://schema.org/",
 			'@type': type ?? '',
 			'@id': id
@@ -27,10 +27,6 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 
 	} catch ( err ) {
 		throw new Error( err );
-	}
-
-	if ( options.asObject ?? false ) {
-		return data;
 	}
 
 	return script;
