@@ -14,19 +14,40 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 		}
 	);
 
+	const validate = ( options.validate ?? true ) && [
+
+		// These are the only one's we can validate ATM.
+	  'WebSite',
+	  'WebPage',
+	  'Person',
+	  'Offer',
+	  'Organization',
+	  'LocalBusiness',
+	  'ItemList',
+	  'Product',
+	  'Event',
+	  'Place',
+	  'PostalAddress',
+	  'ImageObject'
+	].includes( type );
+
 	// This is what we will send to the DOM...
-	const script = /* html */ `<script type="application/ld+json">${ JSON.stringify( data ) }</script>`;
+	const script = /* html */ `<script type="application/ld+json" data-validated="${ validate }">${ JSON.stringify( data ) }</script>`;
 
-	try {
+	// Sometimes the validator doesn't know about certain types of jsonld.
+	if ( validate ) {
 
-		// Test the JSON structure.
-		await structuredDataTest( `<!doctype html><html><head>${ script }</head><body></body></html>`, { schemas: [ type ] } );
+		try {
 
-		// Test the data...
-		await sdoValidate( data, type, { strict: false, validateFormats: false } );
+			// Test the JSON structure.
+			await structuredDataTest( `<!doctype html><html><head>${ script }</head><body></body></html>`, { schemas: [ type ] } );
 
-	} catch ( err ) {
-		throw new Error( err );
+			// Test the data...
+			await sdoValidate( data, type, { strict: false, validateFormats: false } );
+
+		} catch ( err ) {
+			throw new Error( err );
+		}
 	}
 
 	return script;
