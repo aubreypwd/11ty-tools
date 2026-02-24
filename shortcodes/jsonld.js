@@ -2,7 +2,7 @@ const path = require( 'path' );
 const { structuredDataTest } = require( 'structured-data-testing-tool' );
 const { sdoValidate } = require( 'schemaorg-jsd' );
 
-module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld', async function ( type, data, options = {} ) {
+module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld', async function ( type, id, data, options = {} ) {
 
 	// Normalize the object.
 	data = Object.assign(
@@ -10,6 +10,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 				{
 			'@context': "https://schema.org/",
 			'@type': type ?? '',
+			'@id': id
 		}
 	);
 
