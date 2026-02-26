@@ -17,22 +17,22 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 	const validate = ( options.validate ?? true ) && [
 
 		// These are the only one's we can validate ATM.
-	  'WebSite',
-	  'WebPage',
-	  'Person',
-	  'Offer',
-	  'Organization',
-	  'LocalBusiness',
-	  'ItemList',
-	  'Product',
-	  'Event',
-	  'Place',
-	  'PostalAddress',
-	  'ImageObject'
+		'WebSite',
+		'WebPage',
+		'Person',
+		'Offer',
+		'Organization',
+		'LocalBusiness',
+		'ItemList',
+		'Product',
+		'Event',
+		'Place',
+		'PostalAddress',
+		'ImageObject'
 	].includes( type );
 
 	// This is what we will send to the DOM...
-	const script = /* html */ `<script type="application/ld+json" data-validated="${ validate }">${ JSON.stringify( data ) }</script>`;
+	const script = /* html */ `<script type="application/ld+json" data-validated="${ validate }" data-type="${ type }">${ JSON.stringify( data ) }</script>`;
 
 	// Sometimes the validator doesn't know about certain types of jsonld.
 	if ( validate ) {
