@@ -32,14 +32,6 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	// Watch 11ty-tools for changes.
 	eleventyConfig.addWatchTarget( __dirname );
 
-	// Watch the entire 11ty-starter input dir for changes.
-	eleventyConfig.addWatchTarget( config.dir.input );
-
-	console.log( config );
-
-	// Watch 11ty-starter config for changes too.
-	eleventyConfig.addWatchTarget( '../.eleventy.js' );
-
 	// Base template formats.
 	eleventyConfig.setTemplateFormats( [
 		'html',
@@ -343,10 +335,16 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	(
 
 		// Get everything in ./shortcodes/*.js...
-		fs.readdirSync( path.join( __dirname, 'shortcodes/' ) )
-			.filter( file => file.endsWith( '.js' ) )
+		fs.readdirSync( path.join( __dirname, 'shortcodes/' ), { recursive: true } )
+			.filter( file =>
+					file.endsWith( '.js' )
+						&& ! file.startsWith( 'utils/' )
+						&& ! file.startsWith( 'templates/' )
+				)
 			.map( file => path.join( __dirname, 'shortcodes/', file ) )
 	).forEach( ( shortcode ) => {
+
+		console.log( shortcode );
 
 		// Initially load of the shortcode...
 		require( shortcode )( eleventyConfig );
