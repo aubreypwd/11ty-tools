@@ -79,7 +79,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	async function getScriptCode( script ) {
 
 		if ( 'object' !== typeof script ) {
-			throw new Error( '[11ty-tools] script must be an object, and is not.' );
+			throw new Error( '[] script must be an object, and is not.' );
 		}
 
 		// URL script sent.
@@ -89,7 +89,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 			const fileSignature = crypto.createHash( 'md5' ).update( script.src ).digest( 'hex' );
 
 			// Where we will store a cache for it.
-			const cachedFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', 'v2', getScriptCode.name, `${ fileSignature }.cache` );
+			const cachedFile = path.join( require( 'os' ).tmpdir(), '', 'v2', getScriptCode.name, `${ fileSignature }.cache` );
 
 			if ( fs.existsSync( cachedFile ) ) {
 

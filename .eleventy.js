@@ -32,7 +32,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	// Add a fileExsts nunchuck filter.
   eleventyConfig.addFilter( 'fileExists', _path => fs.existsSync( path.resolve( path.join( process.cwd(), config.dir.input, _path ) ) ) );
 
-	// Watch 11ty-tools for changes.
+	// Watch  for changes.
 	eleventyConfig.addWatchTarget( __dirname );
 
 	// Base template formats.
@@ -347,7 +347,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 			.map( file => path.join( __dirname, 'shortcodes/', file ) )
 	).forEach( ( shortcode ) => {
 
-		console.log( `[11ty-tools] Loaded ${ shortcode }.` );
+		console.log( `[11ty-starter-common] Loaded ${ shortcode }.` );
 
 		// Initially load of the shortcode...
 		require( shortcode )( eleventyConfig );
@@ -361,7 +361,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 				.update( fs.readFileSync( require.resolve( shortcode ) ) )
 				.digest( 'hex' );
 
-			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-tools', 'shortcodeCache', `${ crypto.createHash( 'md5' ).update( path.basename( shortcode ) ).digest( 'hex' ) }.cache` );
+			const sigFile = path.join( require( 'os' ).tmpdir(), '', 'shortcodeCache', `${ crypto.createHash( 'md5' ).update( path.basename( shortcode ) ).digest( 'hex' ) }.cache` );
 
 			// If the shortcode file signature didn't change...
 			if (
