@@ -5,7 +5,7 @@ const crypto = require( 'crypto' );
 const os = require( 'os' );
 
 // Change stuff here first.
-const site = require( '../src/_data/site.json' );
+const site = require( '../../../src/_data/site.json' );
 
 module.exports = function ( eleventyConfig, options = {} ) {
 
@@ -28,6 +28,9 @@ module.exports = function ( eleventyConfig, options = {} ) {
 
 	// Add a markdown filter.
 	eleventyConfig.addFilter( 'markdown', content => new markdownIt( { html: true } ).render( String( content ) ) );
+
+	// Add a fileExsts nunchuck filter.
+  eleventyConfig.addFilter( 'fileExists', _path => fs.existsSync( path.resolve( path.join( process.cwd(), config.dir.input, _path ) ) ) );
 
 	// Watch 11ty-tools for changes.
 	eleventyConfig.addWatchTarget( __dirname );
@@ -344,7 +347,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 			.map( file => path.join( __dirname, 'shortcodes/', file ) )
 	).forEach( ( shortcode ) => {
 
-		console.log( shortcode );
+		console.log( `[11ty-tools] Loaded ${ shortcode }.` );
 
 		// Initially load of the shortcode...
 		require( shortcode )( eleventyConfig );
