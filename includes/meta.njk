@@ -1,0 +1,16 @@
+{% if title or site.title %}
+	<title>{% if title %}{{ title }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title }}{% endif %}</title>
+{% endif %}
+
+<meta name="viewport" content="{{ site.meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
+
+{% metagen {
+	title: false,
+	url: site.baseUrl + page.url,
+	desc: site.metagen.desc or '',
+	img: site.baseUrl + site.metagen.img,
+	img_alt: site.title,
+	twitter_card_type: 'summary_large_image',
+	twitter_handle: site.metagen.twitter or '',
+	name: site.metagen.author or ''
+} %}

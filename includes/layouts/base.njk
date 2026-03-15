@@ -1,0 +1,84 @@
+---
+{
+	bootstrap: true,
+	markdown: true
+}
+---
+<!DOCTYPE html>
+<html lang="{{ site.lang or 'en-US' }}">
+
+	{# --- 👉 Macros for the layout: don't end up in the DOM --- #}
+	{% from "../../macros/scripts.njk" import scripts %}
+	{% from "../../macros/css.njk" import css %}
+
+	<head>
+		{# --- 👉 Meta --- #}
+		{% include '11ty-tools/includes/meta.njk' %}
+
+		{# --- 👉 Google fonts (add to site.json or frontmatter) --- #}
+		{% for href in head.google.fonts | default( site.head.google.fonts ) | default( [] ) %}
+			{% eleventyGoogleFonts href %}
+		{% endfor %}
+
+		{# --- 👉 Google Analytics --- #}
+		{% if ga4.id | default( site.ga4.id ) | default( false ) %}
+			{% ga4
+				ga4.id | default( site.ga4.id ),
+				{
+					force: ga4.force | default( site.ga4.force ) | default( false )
+				}
+			%}
+		{% endif %}
+
+		{# --- 👉 sanitize.css --- #}
+		{% if head.css.sanitize.load | default( site.head.css.sanitize.load ) | default( false ) %}
+			<link rel="stylesheet" href="/assets/css/sanitize.css/assets.css">
+			<link rel="stylesheet" href="/assets/css/sanitize.css/forms.css">
+			<link rel="stylesheet" href="/assets/css/sanitize.css/reduce-motion.css">
+			<link rel="stylesheet" href="/assets/css/sanitize.css/sanitize.css">
+			<link rel="stylesheet" href="/assets/css/sanitize.css/system-ui.css">
+			<link rel="stylesheet" href="/assets/css/sanitize.css/typography.css">
+			<link rel="stylesheet" href="/assets/css/sanitize.css/ui-monospace.css">
+		{% endif %}
+
+		{# --- 👉 Critical CSS (global) --- #}
+		{% if ( 'assets/css/critical.css' | fileExists ) and ( head.css.critical.load | default( site.head.css.critical.load ) | default( true ) ) %}
+			<link rel="stylesheet" href="/assets/css/critical.css">
+		{% endif %}
+
+		{# --- 👉 Scripts in the <head> --- #}
+		{{ scripts( head.js | default( site.head.js ) )}}
+
+		{# --- 👉 Extra <head> items --- #}
+		{% for extra in head.extra | default( site.head.extra ) | default( [] ) %}
+			{{ extra | safe }}
+		{% endfor %}
+
+		{# --- 👉 CSS in <head> --- #}
+		{{ css( head.css | default( site.head.css ) | default( [] ) ) }}
+		<style>{% getBundle "css" %}</style>
+	</head>
+
+	<body class="{{ body.class | default( site.body.class ) | default ( '' ) }}">
+		<main class="{{ body.main.class | default( site.body.main.class ) | default( '' ) }}">
+			{% if content %}
+				{% if markdown != false %}
+					{{ content | markdown | safe }}
+				{% else %}
+					{{ content | safe }}
+				{% endif %}
+			{% endif %}
+		</main>
+
+		{# --- 👉 Scripts in the body --- #}
+		{{ scripts( body.js | default( site.body.js ) ) }}
+
+		{# --- 👉 main.js --- #}
+		{% if ( 'assets/js/main.js' | fileExists ) and ( js.main.load | default( site.js.main.load ) | default( true ) ) %}
+			<script src="/assets/js/main.js" {{ js.main.attrs | default( site.js.main.attrs ) | default( '' ) }}></script>
+		{% endif %}
+
+		{# --- 👉 Always load bundled js in the body --- #}
+		<script type="text/javascript">{% getBundle 'js' %}</script>
+	</body>
+</html>
