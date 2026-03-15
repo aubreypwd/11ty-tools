@@ -5,7 +5,7 @@
 <meta name="viewport" content="{{ site.meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
 
 {% metagen {
-	title: false,
+	title: title,
 	url: site.baseUrl + ( page.url | default( '' ) ),
 	desc: site.metagen.desc or '',
 	img: site.baseUrl + site.metagen.img,
