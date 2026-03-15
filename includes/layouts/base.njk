@@ -13,7 +13,9 @@
 
 	<head>
 		{# --- 👉 Meta --- #}
-		{% include '../meta.njk' %}
+{% include '../meta.njk' %}
+
+	
 
 		{# --- 👉 Google fonts (add to site.json or frontmatter) --- #}
 		{% for href in head.google.fonts | default( site.head.google.fonts ) | default( [] ) %}
