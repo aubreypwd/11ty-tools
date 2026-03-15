@@ -6,7 +6,7 @@
 
 {% metagen {
 	title: false,
-	url: site.baseUrl + page.url,
+	url: site.baseUrl + ( page.url | default( '' ) ),
 	desc: site.metagen.desc or '',
 	img: site.baseUrl + site.metagen.img,
 	img_alt: site.title,
