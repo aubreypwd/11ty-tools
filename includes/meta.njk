@@ -1,8 +1,4 @@
-{% if title or site.title %}
-	<title>{% if title %}{{ title }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title }}{% endif %}</title>
-{% endif %}
-
-<meta name="viewport" content="{{ site.meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
+{% set title %}{% if title %}{{ title }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title }}{% endif %}{% endset %}
 
 {% metagen {
 	title: title,
@@ -14,3 +10,5 @@
 	twitter_handle: site.metagen.twitter or '',
 	name: site.metagen.author or ''
 } %}
+
+<meta name="viewport" content="{{ site.meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
