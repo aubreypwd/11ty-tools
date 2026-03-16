@@ -1,0 +1,19 @@
+# {{ jsonld.LocalBusiness.name or "Unknown Business" }}
+
+> {{ jsonld.LocalBusiness.name or "Unknown Business" }} is a {{ jsonld.LocalBusiness.priceRange or "local entertainment provider" }} serving {{ jsonld.LocalBusiness.areaServed or "the Anaheim, California area" }} with {{ jsonld.LocalBusiness.description or "unique guided adventures inspired by Goofy" }}.
+
+{{ jsonld.LocalBusiness.description or "Unknown description." }}
+{% if jsonld.LocalBusiness.address and (jsonld.LocalBusiness.address.streetAddress or jsonld.LocalBusiness.address.addressLocality) %}Primary location: {{ jsonld.LocalBusiness.address.streetAddress or "Unknown address" }}{% if jsonld.LocalBusiness.address.addressLocality %}, {{ jsonld.LocalBusiness.address.addressLocality }}{% endif %}{% if jsonld.LocalBusiness.address.addressRegion %}, {{ jsonld.LocalBusiness.address.addressRegion }}{% endif %}{% if jsonld.LocalBusiness.address.postalCode %} {{ jsonld.LocalBusiness.address.postalCode }}{% endif %}{% endif %}
+{% if jsonld.LocalBusiness.telephone %}Phone: {{ jsonld.LocalBusiness.telephone }}{% endif %}
+{% if jsonld.LocalBusiness.areaServed %}Service areas: {{ jsonld.LocalBusiness.areaServed }}{% endif %}
+{% if jsonld.Person.knowsAbout and jsonld.Person.knowsAbout | length %}Primary audience: {{ jsonld.Person.knowsAbout | join(", ") }}{% endif %}
+{% if jsonld.LocalBusiness.openingHours and jsonld.LocalBusiness.openingHours | length %}Hours: {{ jsonld.LocalBusiness.openingHours | join("; ") }}{% endif %}
+Booking / contact: {{ site.baseUrl }}#booking
+
+{% for sectionName, section in llms %}
+{%- if section.links and section.links | length %}## {{ sectionName }}
+{% for link in section.links -%}
+- [{{ link.label }}]({{ link.href }}): {{ link.description }}
+{% endfor %}
+{%- endif %}
+{% endfor %}
