@@ -9,7 +9,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 		required.deepmerge(
 			data,
 			{
-				'@context': "https://schema.org/",
+				'@context': 'https://schema.org/',
 				'@type': type ?? 'Unknown',
 				'@id': id
 			}
