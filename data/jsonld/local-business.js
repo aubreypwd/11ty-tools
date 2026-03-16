@@ -20,7 +20,8 @@ module.exports = ( site, overrides = {} ) => {
 				postalCode: '',
 				addressLocality: '',
 				addressRegion: '',
-				addressCountry: ''
+				addressCountry: '',
+				streetAddress: ''
 			},
 			openingHours: []
 		},

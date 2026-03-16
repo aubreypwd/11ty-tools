@@ -1,17 +1,20 @@
 const path = require( 'path' );
+const merge = require( 'deepmerge' );
 const { structuredDataTest } = require( 'structured-data-testing-tool' );
 const { sdoValidate } = require( 'schemaorg-jsd' );
 
 module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld', async function ( type, id, data, options = {}, overrides = {} ) {
 
 	// Normalize the object.
-	data = Object.assign(
-		data,
-		{
-			'@context': "https://schema.org/",
-			'@type': type ?? 'Unknown',
-			'@id': id
-		},
+	data = merge(
+		merge(
+			data,
+			{
+				'@context': "https://schema.org/",
+				'@type': type ?? 'Unknown',
+				'@id': id
+			}
+		),
 		overrides
 	);
 
