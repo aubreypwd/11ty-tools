@@ -1,6 +1,6 @@
-const merge = require( 'deepmerge' );
+const required = require( '@root/required.js' );
 
-module.exports = ( site, overrides = {} ) => merge(
+module.exports = ( site, overrides = {} ) => required.deepmerge(
 	{
 		'Services': {
 			'links': Object

@@ -1,6 +1,4 @@
-const path = require( 'path' );
-const fs = require( 'fs' );
-const crypto = require('crypto');
+const required = require( '@root/required.js' );
 
 module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], options = {} ) {
 
@@ -86,15 +84,15 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		if ( /^https?:\/\//.test( script.src ?? '' ) ) {
 
 			// A signature for the file.
-			const fileSignature = crypto.createHash( 'md5' ).update( script.src ).digest( 'hex' );
+			const fileSignature = required.crypto.createHash( 'md5' ).update( script.src ).digest( 'hex' );
 
 			// Where we will store a cache for it.
-			const cachedFile = path.join( require( 'os' ).tmpdir(), '11ty-starter-common', 'v2', getScriptCode.name, `${ fileSignature }.cache` );
+			const cachedFile = required.path.join( required.os.tmpdir(), '11ty-starter-common', 'v2', getScriptCode.name, `${ fileSignature }.cache` );
 
-			if ( fs.existsSync( cachedFile ) ) {
+			if ( required.fs.existsSync( cachedFile ) ) {
 
 				// We already have this cached, use that.
-				return fs.readFileSync( cachedFile, 'utf8' );
+				return required.fs.readFileSync( cachedFile, 'utf8' );
 			}
 
 			// Fetch the code...
@@ -111,15 +109,15 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 				}
 
 				// Write code to cache.
-				fs.mkdirSync( path.dirname( cachedFile ), { recursive: true } );
-				fs.writeFileSync( cachedFile, code );
+				required.fs.mkdirSync( required.path.dirname( cachedFile ), { recursive: true } );
+				required.fs.writeFileSync( cachedFile, code );
 
 				return code;
 			} );
 		}
 
 		// Use local file instead.
-		let code = fs.readFileSync( path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' );
+		let code = required.fs.readFileSync( required.path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' );
 
 		// Optimize code (maybe).
 		if ( script.babel ?? true ) code = await babelifyCode( code );
@@ -167,13 +165,13 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 	const bundledExternalCode = await bundleScripts( scripts.filter( script => ! script.inline && script.bundle ) );
 	if ( bundledExternalCode ) {
 
-		const outfile = path.join( eleventyConfig.dir.output, options.output ?? 'assets/js', options.bundle.file );
+		const outfile = required.path.join( eleventyConfig.dir.output, options.output ?? 'assets/js', options.bundle.file );
 
-		fs.mkdirSync( path.dirname( outfile ), { recursive: true } )
-			&& fs.writeFileSync( outfile, bundledExternalCode );
+		required.fs.mkdirSync( required.path.dirname( outfile ), { recursive: true } )
+			&& required.fs.writeFileSync( outfile, bundledExternalCode );
 
 		tags.push( {
-			src: path.join( eleventyConfig.pathPrefix, options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
+			src: required.path.join( eleventyConfig.pathPrefix, options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
 			defer: options.bundle.defer ?? false,
 			async: options.bundle.async ?? false
 		} );
@@ -201,21 +199,21 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 			script.src = /^https?:\/\//.test( script.src )
 
 				// Point to the new file in the filesystem (assumes assets/js).
-				? path.join( script.file ?? 'assets/js', path.basename( new URL( script.src ).pathname ) )
+				? required.path.join( script.file ?? 'assets/js', required.path.basename( new URL( script.src ).pathname ) )
 
 				// Keep the original (local) src.
 				: script.src;
 
 			// Where we will write the src="" file to...
-			const outfile = path.resolve( eleventyConfig.dir.output, script.src );
+			const outfile = required.path.resolve( eleventyConfig.dir.output, script.src );
 
 			// Write it there...
-			fs.mkdirSync( path.dirname( outfile ), { recursive: true } )
-				&& fs.writeFileSync( outfile, code );
+			required.fs.mkdirSync( required.path.dirname( outfile ), { recursive: true } )
+				&& required.fs.writeFileSync( outfile, code );
 
 			// Add a tag for it.
 			tags.push( {
-				src: path.join( eleventyConfig.pathPrefix, script.src ),
+				src: required.path.join( eleventyConfig.pathPrefix, script.src ),
 
 				// Options for the script.
 				defer: script.defer ?? false,

@@ -1,7 +1,7 @@
-const merge = require( 'deepmerge' );
+const required = require( '@root/required.js' );
 
 module.exports = ( site, overrides = {} ) => {
-	return merge(
+	return required.deepmerge(
 		{
 			'@type': 'WebSite',
 			'@id': `${ site.baseUrl }#WebSite`,

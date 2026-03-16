@@ -1,8 +1,5 @@
-const path = require( 'path' );
+const required = require( '@root/required.js' );
 const markdownIt = require( 'markdown-it' );
-const fs = require( 'fs' );
-const crypto = require( 'crypto' );
-const os = require( 'os' );
 
 // Change stuff here first.
 const site = require( '../../../src/_data/site.js' );
@@ -30,7 +27,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	eleventyConfig.addFilter( 'markdown', content => new markdownIt( { html: true } ).render( String( content ) ) );
 
 	// Add a fileExsts nunchuck filter.
-  eleventyConfig.addFilter( 'fileExists', _path => fs.existsSync( path.resolve( path.join( process.cwd(), config.dir.input, _path ) ) ) );
+  eleventyConfig.addFilter( 'fileExists', _path => required.fs.existsSync( required.path.resolve( required.path.join( process.cwd(), config.dir.input, _path ) ) ) );
 
 	// Watch 11ty-starter-common for changes.
 	eleventyConfig.addWatchTarget( __dirname );
@@ -59,7 +56,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 		const { eleventyImageTransformPlugin } = require( '@11ty/eleventy-img' );
 
 		eleventyConfig.addPlugin( eleventyImageTransformPlugin, {
-			outputDir: path.join( config.dir.output, 'assets/img' ),
+			outputDir: required.path.join( config.dir.output, 'assets/img' ),
 			urlPath: '/assets/img',
 			formats: [ 'avif', 'webp', 'jpeg' ],
 			transformOnRequest: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
@@ -83,7 +80,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 
 			// Place files here.
 			filenameFormat: ( id, src, width, format, options ) => {
-				return `${id}/${ path.parse( src ).name }-${width}.${format}`;
+				return `${id}/${ required.path.parse( src ).name }-${width}.${format}`;
 			},
 
 			// Overrides: images.
@@ -98,26 +95,26 @@ module.exports = function ( eleventyConfig, options = {} ) {
 
 			const Image = require( '@11ty/eleventy-img' );
 
-			const inputDir = path.resolve( config.dir.input, 'assets/img/passthrough' );
-			const outputDir = path.resolve( config.dir.output, 'assets/img' );
+			const inputDir = required.path.resolve( config.dir.input, 'assets/img/passthrough' );
+			const outputDir = required.path.resolve( config.dir.output, 'assets/img' );
 
-			if ( fs.existsSync( inputDir ) ) {
-				await fs.promises.mkdir( inputDir, { recursive: true } );
+			if ( required.fs.existsSync( inputDir ) ) {
+				await required.fs.promises.mkdir( inputDir, { recursive: true } );
 			}
 
-			const files = await fs.promises.readdir( inputDir, { recursive: true } );
+			const files = await required.fs.promises.readdir( inputDir, { recursive: true } );
 
 			for ( const file of files ) {
 
-				const inputPath = path.join( inputDir, file );
+				const inputPath = required.path.join( inputDir, file );
 
 				await Image(
 					inputPath,
 					{
 						formats: [ 'webp' ],
-						outputDir: path.join( outputDir, path.dirname( file ) ),
+						outputDir: required.path.join( outputDir, required.path.dirname( file ) ),
 						urlPath: '/assets/img/',
-						filenameFormat: () => `${ path.parse( file ).name }.webp`,
+						filenameFormat: () => `${ required.path.parse( file ).name }.webp`,
 						...( options.imgPassthrough?.Image?.options ?? {} )
 					}
 				)
@@ -338,13 +335,13 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	(
 
 		// Get everything in ./shortcodes/*.js...
-		fs.readdirSync( path.join( __dirname, 'shortcodes/' ), { recursive: true } )
+		required.fs.readdirSync( required.path.join( __dirname, 'shortcodes/' ), { recursive: true } )
 			.filter( file =>
 					file.endsWith( '.js' )
 						&& ! file.startsWith( 'utils/' )
 						&& ! file.startsWith( 'templates/' )
 				)
-			.map( file => path.join( __dirname, 'shortcodes/', file ) )
+			.map( file => required.path.join( __dirname, 'shortcodes/', file ) )
 	).forEach( ( shortcode ) => {
 
 		console.log( `[11ty-starter-common] Loaded ${ shortcode }.` );
@@ -356,17 +353,17 @@ module.exports = function ( eleventyConfig, options = {} ) {
 		eleventyConfig.on( 'eleventy.before', () => {
 
 			// Get a signature for the shortcode file...
-			shorcodeSignature = crypto
+			shorcodeSignature = required.crypto
 				.createHash( 'md5' )
-				.update( fs.readFileSync( require.resolve( shortcode ) ) )
+				.update( required.fs.readFileSync( require.resolve( shortcode ) ) )
 				.digest( 'hex' );
 
-			const sigFile = path.join( require( 'os' ).tmpdir(), '11ty-starter-common', 'shortcodeCache', `${ crypto.createHash( 'md5' ).update( path.basename( shortcode ) ).digest( 'hex' ) }.cache` );
+			const sigFile = required.path.join( required.os.tmpdir(), '11ty-starter-common', 'shortcodeCache', `${ required.crypto.createHash( 'md5' ).update( required.path.basename( shortcode ) ).digest( 'hex' ) }.cache` );
 
 			// If the shortcode file signature didn't change...
 			if (
-				shorcodeSignature === ( fs.existsSync( sigFile )
-					? fs.readFileSync( sigFile, 'utf8' )
+				shorcodeSignature === ( required.fs.existsSync( sigFile )
+					? required.fs.readFileSync( sigFile, 'utf8' )
 					: '' )
 			) {
 				return; // Don't trigger a rebuild.
@@ -376,11 +373,11 @@ module.exports = function ( eleventyConfig, options = {} ) {
 			require( shortcode )( eleventyConfig );
 
 			// Trigger a rebuild by touching the config file.
-			fs.utimesSync( path.resolve( '.eleventy.js' ), new Date(), new Date() );
+			required.fs.utimesSync( required.path.resolve( '.eleventy.js' ), new Date(), new Date() );
 
 			// Update the shortcode signature for next time.
-			fs.mkdirSync( path.dirname( sigFile ), { recursive: true });
-			fs.writeFileSync( sigFile, shorcodeSignature );
+			required.fs.mkdirSync( required.path.dirname( sigFile ), { recursive: true });
+			required.fs.writeFileSync( sigFile, shorcodeSignature );
 		} );
 	} );
 
