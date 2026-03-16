@@ -1,4 +1,3 @@
-// You can override this data in your site.js.
 const site = require( '../../../_data/site.js' );
 
 module.exports = {
@@ -27,9 +26,6 @@ module.exports = {
 		inLanguage: site.lang ?? '',
 		isPartOf: { '@id': `${ site.baseUrl }#WebSite` },
 		about: { '@id': `${ site.baseUrl }#LocalBusiness` },
-
-		// Overrides from site.jsonld.modify
-		...( site.jsonld?.modify.WebPage || {} )
 	},
 
 	// https://schema.org/Person
@@ -43,9 +39,6 @@ module.exports = {
 		email: '',
 		sameAs: [],
 		knowsAbout: [],
-
-		// Overrides from site.jsonld.modify
-		...( site.jsonld?.modify.Person || {} )
 	},
 
 	// https://schema.org/LocalBusiness
@@ -71,11 +64,5 @@ module.exports = {
 			addressCountry: ''
 		},
 		openingHours: [],
-
-		// Overrides from site.jsonld.modify
-		...( site.jsonld?.modify.LocalBusiness || {} )
-	},
-
-	// Add or override entire objects.
-	...( site.jsonld.append ?? {} )
+	}
 };
