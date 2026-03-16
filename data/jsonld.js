@@ -9,9 +9,6 @@ module.exports = {
 		name: site.title ?? '',
 		url: `${ site.baseUrl }`,
 		inLanguage: site.lang ?? '',
-
-		// Overrides from site.jsonld.modify
-		...( site.jsonld?.modify.WebSite || {} )
 	},
 
 	// https://schema.org/WebPage
