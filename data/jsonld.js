@@ -1,5 +1,4 @@
-
-// You can override this data in your site.json.
+// You can override this data in your site.js.
 const site = require( '../../../_data/site.js' );
 
 module.exports = {
@@ -8,85 +7,74 @@ module.exports = {
 	WebSite: {
 		'@type': 'WebSite',
 		'@id': `${ site.baseUrl }#WebSite`,
-		name: 'Example Website',
+		name: site.title ?? '',
 		url: `${ site.baseUrl }`,
-		inLanguage: 'en-US',
+		inLanguage: site.lang ?? '',
 
-		// Overrides from site.jsonld.WebSite
-		...( site.jsonld?.WebSite || {} )
+		// Overrides from site.jsonld.modify
+		...( site.jsonld?.modify.WebSite || {} )
 	},
 
 	// https://schema.org/WebPage
 	WebPage: {
 		'@type': 'WebPage',
 		'@id': `${ site.baseUrl }#WebPage`,
-		name: 'Example Page',
-		url: `${ site.baseUrl }/example-page/`,
-		description: 'Example description for a webpage on Example Website.',
-		inLanguage: 'en-US',
+
+		name: '', // Set in src/_includes/11ty-starter-common/includes/jsonld.njk (page.title)
+		url: `${ site.baseUrl }/#WebPage`, // Set in src/_includes/11ty-starter-common/includes/jsonld.njk (site.baseUrl + page.url)
+		description: '', // Set in src/_includes/11ty-starter-common/includes/jsonld.njk (page.description)
+
+		inLanguage: site.lang ?? '',
 		isPartOf: { '@id': `${ site.baseUrl }#WebSite` },
 		about: { '@id': `${ site.baseUrl }#LocalBusiness` },
 
-		// Overrides from site.jsonld.WebPage
-		...( site.jsonld?.WebPage || {} )
+		// Overrides from site.jsonld.modify
+		...( site.jsonld?.modify.WebPage || {} )
 	},
 
 	// https://schema.org/Person
 	Person: {
 		'@type': 'Person',
 		'@id': `${ site.baseUrl }#Person`,
-		name: 'Example Person',
-		jobTitle: 'Example Job Title',
+		name: site.meta?.author ?? '',
+		jobTitle: '',
 		url: `${ site.baseUrl }/`,
-		telephone: '+1-555-555-5555',
-		email: 'hello@example.com',
-		sameAs: [
-			'https://twitter.com/example',
-			'https://facebook.com/example',
-			'https://linkedin.com/in/example'
-		],
-		knowsAbout: [
-			'Example Skill One',
-			'Example Skill Two',
-			'Example Skill Three'
-		],
+		telephone: '',
+		email: '',
+		sameAs: [],
+		knowsAbout: [],
 
-		// Overrides from site.jsonld.Person
-		...( site.jsonld?.Person || {} )
+		// Overrides from site.jsonld.modify
+		...( site.jsonld?.modify.Person || {} )
 	},
 
 	// https://schema.org/LocalBusiness
 	LocalBusiness: {
 		'@type': 'LocalBusiness',
 		'@id': `${ site.baseUrl }#LocalBusiness`,
-		image: `${ site.baseUrl }/assets/img/example.jpg`,
-		name: 'Example Business',
-		alternateName: 'Example Alternate Business Name',
-		description: 'Example business description for a local business website.',
+		image: site.meta?.img ? `${ site.baseUrl }${ site.meta.img }` : '',
+		name: site.title ?? '',
+		alternateName: site.meta?.author ?? '',
+		description: site.meta?.desc ?? '',
 		url: `${ site.baseUrl }/`,
-		telephone: '+1-555-555-5555',
-		priceRange: '$$',
-		areaServed: 'Example City, Example State',
-		sameAs: [
-			'https://maps.google.com/?q=Example+Business',
-			'https://twitter.com/example',
-			'https://facebook.com/example',
-			'https://linkedin.com/company/example'
-		],
+		telephone: '',
+		priceRange: '',
+		areaServed: '',
+		sameAs: [],
 		address: {
 			// https://schema.org/PostalAddress
 			'@type': 'PostalAddress',
-			postalCode: '12345',
-			addressLocality: 'Example City',
-			addressRegion: 'EX',
-			addressCountry: 'US'
+			postalCode: '',
+			addressLocality: '',
+			addressRegion: '',
+			addressCountry: ''
 		},
-		openingHours: [ 'Mo-Fr 09:00-17:00' ],
+		openingHours: [],
 
-		// Overrides from site.jsonld.LocalBusiness
-		...( site.jsonld?.LocalBusiness || {} )
+		// Overrides from site.jsonld.modify
+		...( site.jsonld?.modify.LocalBusiness || {} )
 	},
 
 	// Add or override entire objects.
-	... ( site.jsonld ?? {} )
+	...( site.jsonld.append ?? {} )
 };

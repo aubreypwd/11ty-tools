@@ -3,12 +3,12 @@
 {% metagen {
 	title: title,
 	url: site.baseUrl + ( page.url | default( '' ) ),
-	desc: site.metagen.desc or '',
-	img: site.baseUrl + site.metagen.img,
+	desc: site.meta.desc or '',
+	img: site.baseUrl + site.meta.img,
 	img_alt: site.title,
 	twitter_card_type: 'summary_large_image',
-	twitter_handle: site.metagen.twitter or '',
-	name: site.metagen.author or ''
+	twitter_handle: site.meta.twitter or '',
+	name: site.meta.author or ''
 } %}
 
 <meta name="viewport" content="{{ site.meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">

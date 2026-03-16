@@ -1,3 +1,15 @@
 {% for key, item in jsonld %}
-	{% jsonld item['@type'], item['@id'], item %}
+
+	{% if item['@type'] == 'WebPage' %}
+		{% jsonld item['@type'], item['@id'], item, {},
+			{
+				name: title,
+				url: site.baseUrl + page.url,
+				description: description
+			}
+		%}
+	{% else %}
+		{% jsonld item['@type'], item['@id'], item %}
+	{% endif %}
+
 {% endfor %}
