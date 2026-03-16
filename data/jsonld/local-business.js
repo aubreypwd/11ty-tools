@@ -1,5 +1,5 @@
-module.exports = ( site ) => ( {
-	LocalBusiness: {
+module.exports = ( site, overrides = {} ) => {
+	return {
 		'@type': 'LocalBusiness',
 		'@id': `${ site.baseUrl }#LocalBusiness`,
 		image: site.meta?.img ? `${ site.baseUrl }/${ site.meta.img }` : '',
@@ -17,8 +17,9 @@ module.exports = ( site ) => ( {
 			postalCode: '',
 			addressLocality: '',
 			addressRegion: '',
-			addressCountry: ''
+			addressCountry: '',
 		},
 		openingHours: [],
-	},
-} );
+		...overrides,
+	};
+};

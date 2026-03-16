@@ -1,4 +1,4 @@
-module.exports = ( site ) => ( {
+module.exports = ( site, overrides = {} ) => ( {
 	'Services': {
 		'links': Object
 			.values( site.jsonld ?? {} )
@@ -32,5 +32,6 @@ module.exports = ( site ) => ( {
 	},
 	'Optional': {
 		'links': []
-	}
+	},
+	...overrides
 } );

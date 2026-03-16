@@ -1,5 +1,5 @@
-module.exports = ( site ) => ( {
-	WebPage: {
+module.exports = ( site, overrides = {} ) => {
+	return {
 		'@type': 'WebPage',
 		'@id': `${ site.baseUrl }#WebPage`,
 		name: '',
@@ -8,5 +8,6 @@ module.exports = ( site ) => ( {
 		inLanguage: site.lang ?? '',
 		isPartOf: { '@id': `${ site.baseUrl }#WebSite` },
 		about: { '@id': `${ site.baseUrl }#LocalBusiness` },
-	},
-} );
+		...overrides,
+	};
+};

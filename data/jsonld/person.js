@@ -1,5 +1,5 @@
-module.exports = ( site ) => ( {
-	Person: {
+module.exports = ( site, overrides = {} ) => {
+	return {
 		'@type': 'Person',
 		'@id': `${ site.baseUrl }#Person`,
 		name: site.meta?.author ?? '',
@@ -9,5 +9,6 @@ module.exports = ( site ) => ( {
 		email: '',
 		sameAs: [],
 		knowsAbout: [],
-	},
-} );
+		...overrides,
+	};
+};
