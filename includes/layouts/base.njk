@@ -1,6 +1,5 @@
 ---
 {
-	bootstrap: true,
 	markdown: true
 }
 ---
@@ -31,7 +30,7 @@
 		{% endif %}
 
 		{# --- 👉 sanitize.css --- #}
-		{% if head.css.sanitize.load | default( site.head.css.sanitize.load ) | default( false ) %}
+		{% if head.css.sanitize.load | default( site.head.css.sanitize.load ) | default( true ) %}
 			<link rel="stylesheet" href="/assets/css/sanitize.css/assets.css">
 			<link rel="stylesheet" href="/assets/css/sanitize.css/forms.css">
 			<link rel="stylesheet" href="/assets/css/sanitize.css/reduce-motion.css">
