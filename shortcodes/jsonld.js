@@ -9,7 +9,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 		data,
 		{
 			'@context': "https://schema.org/",
-			'@type': type ?? '',
+			'@type': type ?? 'Unknown',
 			'@id': id
 		}
 	);

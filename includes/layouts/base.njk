@@ -13,11 +13,9 @@
 
 	<head>
 		{# --- 👉 Meta --- #}
-{% include '../meta.njk' %}
+		{% include '../meta.njk' %}
 
-	
-
-		{# --- 👉 Google fonts (add to site.json or frontmatter) --- #}
+		{# --- 👉 Google fonts (add to _data/site.js or frontmatter) --- #}
 		{% for href in head.google.fonts | default( site.head.google.fonts ) | default( [] ) %}
 			{% eleventyGoogleFonts href %}
 		{% endfor %}
@@ -59,6 +57,8 @@
 		{# --- 👉 CSS in <head> --- #}
 		{{ css( head.css | default( site.head.css ) | default( [] ) ) }}
 		<style>{% getBundle "css" %}</style>
+
+		{% include '../jsonld.njk' %}
 	</head>
 
 	<body class="{{ body.class | default( site.body.class ) | default ( '' ) }}">

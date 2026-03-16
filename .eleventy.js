@@ -5,7 +5,7 @@ const crypto = require( 'crypto' );
 const os = require( 'os' );
 
 // Change stuff here first.
-const site = require( '../../../src/_data/site.json' );
+const site = require( '../../../src/_data/site.js' );
 
 module.exports = function ( eleventyConfig, options = {} ) {
 
@@ -19,7 +19,7 @@ module.exports = function ( eleventyConfig, options = {} ) {
 		htmlTemplateEngine: 'njk',
 		markdownTemplateEngine: 'njk',
 
-		// Overrides: site.json.
+		// Overrides: _data/site.js.
 		...site,
 
 		// Overrides: config args.
