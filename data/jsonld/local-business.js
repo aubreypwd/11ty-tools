@@ -1,6 +1,4 @@
-const site = require( '../../../../_data/site.js' );
-
-module.exports = {
+module.exports = ( site ) => ( {
 	LocalBusiness: {
 		'@type': 'LocalBusiness',
 		'@id': `${ site.baseUrl }#LocalBusiness`,
@@ -23,4 +21,4 @@ module.exports = {
 		},
 		openingHours: [],
 	},
-};
+} );

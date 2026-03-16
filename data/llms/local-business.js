@@ -1,9 +1,7 @@
-const site = require( '../../../../_data/site.js' ) ?? {};
-
-module.exports = {
+module.exports = ( site ) => ( {
 	'Services': {
 		'links': Object
-			.values( ( require( '../../../../_data/jsonld.js' ) ?? {} ) )
+			.values( site.jsonld ?? {} )
 			.filter( item => item?.[ '@type' ] === 'Service' )
 			.map( service => {
 				const anchor = String( service[ '@id' ] || service.name || '' )
@@ -18,6 +16,8 @@ module.exports = {
 				};
 			} )
 	},
+
+	// Do not modify these here, instead override them where you require this.
 	'Core Business Information': {
 		'links': []
 	},
@@ -33,4 +33,4 @@ module.exports = {
 	'Optional': {
 		'links': []
 	}
-};
+} );

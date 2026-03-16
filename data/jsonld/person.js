@@ -1,6 +1,4 @@
-const site = require( '../../../../_data/site.js' );
-
-module.exports = {
+module.exports = ( site ) => ( {
 	Person: {
 		'@type': 'Person',
 		'@id': `${ site.baseUrl }#Person`,
@@ -12,4 +10,4 @@ module.exports = {
 		sameAs: [],
 		knowsAbout: [],
 	},
-};
+} );

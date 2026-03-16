@@ -1,6 +1,4 @@
-const site = require( '../../../../_data/site.js' );
-
-module.exports = {
+module.exports = ( site ) => ( {
 	WebPage: {
 		'@type': 'WebPage',
 		'@id': `${ site.baseUrl }#WebPage`,
@@ -11,4 +9,4 @@ module.exports = {
 		isPartOf: { '@id': `${ site.baseUrl }#WebSite` },
 		about: { '@id': `${ site.baseUrl }#LocalBusiness` },
 	},
-};
+} );

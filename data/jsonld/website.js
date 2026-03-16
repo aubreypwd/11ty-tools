@@ -1,6 +1,4 @@
-const site = require( '../../../../_data/site.js' );
-
-module.exports = {
+module.exports = ( site ) => ( {
 	WebSite: {
 		'@type': 'WebSite',
 		'@id': `${ site.baseUrl }#WebSite`,
@@ -8,4 +6,4 @@ module.exports = {
 		url: `${ site.baseUrl }`,
 		inLanguage: site.lang ?? '',
 	},
-};
+} );
