@@ -17,6 +17,7 @@ module.exports = function ( eleventyConfig, flags = {}, overrides = {} ) {
 				},
 				htmlTemplateEngine: 'njk',
 				markdownTemplateEngine: 'njk',
+				flags: flags,
 			},
 			overrides.config ?? {}
 		),
