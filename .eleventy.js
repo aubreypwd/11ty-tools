@@ -46,6 +46,9 @@ module.exports = function ( eleventyConfig ) {
 	// Dump json so you can look at it.
 	eleventyConfig.addFilter( 'pj', ( value, spaces = 2 ) => JSON.stringify( value, null, spaces ) );
 
+	// Deep merge objects in templates when site defaults need page-level overrides.
+	eleventyConfig.addFilter( 'deepmerge', ( base, override = {} ) => required.deepmerge( base ?? {}, override ?? {} ) );
+
 	// Watch 11ty-starter-common for changes.
 	eleventyConfig.addWatchTarget( __dirname );
 
