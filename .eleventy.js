@@ -27,7 +27,24 @@ module.exports = function ( eleventyConfig, flags = {}, overrides = {} ) {
 	eleventyConfig.addFilter( 'markdown', content => new markdownIt( { html: true } ).render( String( content ) ) );
 
 	// Add a fileExsts nunchuck filter.
-  eleventyConfig.addFilter( 'fileExists', _path => required.fs.existsSync( required.path.resolve( required.path.join( process.cwd(), config.dir.input, _path ) ) ) );
+	eleventyConfig.addFilter( 'fileExists', _path => required.fs.existsSync( required.path.resolve( required.path.join( process.cwd(), config.dir.input, _path ) ) ) );
+
+	// Add a way to strip the outer tags of a string, useful for {{ 'content' | markdown | sot | safe }}.
+	eleventyConfig.addFilter( 'sot', function( str ) {
+
+		const { parse } = require( 'node-html-parser' );
+
+		if ( ! str ) {
+			return str;
+		}
+
+		const root = parse( str );
+		const first = root.firstChild ?? false;
+
+		return first
+			? first.innerHTML
+			: str;
+	} );
 
 	// Watch 11ty-starter-common for changes.
 	eleventyConfig.addWatchTarget( __dirname );
