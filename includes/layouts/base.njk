@@ -49,14 +49,15 @@
 		{% endif %}
 
 		{# --- 👉 Scripts in the <head> --- #}
-		{% scripts
-			head.js | default( site.head.js ) | default( [] ),
-			{
-				bundle: {
-					file: 'head.bundle.js'
-				}
-			}
-		%}
+		{% for script in head.js | default( site.head.js ) | default( [] ) %}
+			{% if script.src %}
+				<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
+			{% elif script.inline %}
+				<script type="text/javascript" {{ script.attrs | default( '' ) }}>
+					{{ script.inline | safe }}
+				</script>
+			{% endif %}
+		{% endfor %}
 
 		{# --- 👉 Appended <head> items --- #}
 		{% for append in head.append | default( site.head.append ) | default( [] ) %}
@@ -82,14 +83,15 @@
 		</main>
 
 		{# --- 👉 Scripts in the body --- #}
-		{% scripts
-			body.js | default( site.body.js ) | default( [] ),
-			{
-				bundle: {
-					file: 'body.bundle.js'
-				}
-			}
-		%}
+		{% for script in body.js | default( site.body.js ) | default( [] ) %}
+			{% if script.src %}
+				<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
+			{% elif script.inline %}
+				<script type="text/javascript" {{ script.attrs | default( '' ) }}>
+					{{ script.inline | safe }}
+				</script>
+			{% endif %}
+		{% endfor %}
 
 		{# --- 👉 main.js --- #}
 		{% if ( 'assets/js/main.js' | fileExists ) and ( js.main.enabled | default( site.js.main.enabled ) | default( true ) ) %}
