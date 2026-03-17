@@ -50,18 +50,11 @@
 
 		{# --- 👉 Scripts in the <head> --- #}
 		{% for script in head.js | default( site.head.js ) | default( [] ) %}
-			{% if script.src %}
+			{% if script.src and script.inline %}
+				<script type="text/javascript" {{ script.attrs | default( '' ) }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
+			{% elif script.src %}
 				<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
-			{% elif script.inline %}
-				<script type="text/javascript" {{ script.attrs | default( '' ) }}>
-					{{ script.inline | safe }}
-				</script>
 			{% endif %}
-		{% endfor %}
-
-		{# --- 👉 Appended <head> items --- #}
-		{% for append in head.append | default( site.head.append ) | default( [] ) %}
-			{{ append | safe }}
 		{% endfor %}
 
 		{# --- 👉 CSS in <head> --- #}
@@ -69,6 +62,11 @@
 		<style>{% getBundle "css" %}</style>
 
 		{% include '../jsonld.njk' %}
+
+		{# --- 👉 Appended <head> items --- #}
+		{% for append in head.append | default( site.head.append ) | default( [] ) %}
+			{{ append | safe }}
+		{% endfor %}
 	</head>
 
 	<body class="{{ body.class | default( site.body.class ) | default ( '' ) }}">
@@ -84,12 +82,10 @@
 
 		{# --- 👉 Scripts in the body --- #}
 		{% for script in body.js | default( site.body.js ) | default( [] ) %}
-			{% if script.src %}
+			{% if script.src and script.inline %}
+				<script type="text/javascript" {{ script.attrs | default( '' ) }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
+			{% elif script.src %}
 				<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
-			{% elif script.inline %}
-				<script type="text/javascript" {{ script.attrs | default( '' ) }}>
-					{{ script.inline | safe }}
-				</script>
 			{% endif %}
 		{% endfor %}
 

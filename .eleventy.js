@@ -192,7 +192,7 @@ module.exports = function ( eleventyConfig ) {
 							treeShaking: true,
 							format: 'iife', // Not a module.
 							target: [ 'es2015' ], // Works in anything.
-							legalComments: 'none',
+							legalComments: 'none', // No license stuff (want to keep it small).
 
 							// Allow debugging at least.
 							minify: ( process.env.ELEVENTY_ENV === 'production' ) ? true : false,
