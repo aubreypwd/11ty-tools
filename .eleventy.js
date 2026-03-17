@@ -1,12 +1,10 @@
 const required = require( '@root/required.js' );
-const markdownIt = require( 'markdown-it' );
+const markdownIt = require( 'markdown-it' ); // Cannot be in required.js since it's a Class.
 
 // Change stuff here first.
 const site = require( '../../../src/_data/site.js' );
 
 module.exports = function ( eleventyConfig, flags = {}, overrides = {} ) {
-
-	console.log( overrides );
 
 	// Main config (you can overide these in 11ty-starter).
 	const config = required.deepmerge(
