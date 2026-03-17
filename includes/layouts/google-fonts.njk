@@ -1,5 +1,5 @@
-{% if head.google.fonts.enabled | default( true ) %}
-	{% for href in head.google.fonts.config | default( [] ) %}
+{% if body.head.google.fonts | default( [] ) | length %}
+	{% for href in body.head.google.fonts %}
 		{% eleventyGoogleFonts href %}
 	{% endfor %}
 {% endif %}

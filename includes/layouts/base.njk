@@ -5,7 +5,6 @@
 ---
 <!DOCTYPE html>
 <html lang="{{ site.lang or 'en-US' }}">
-	{%- set head = site.head | deepmerge( head ) -%}
 	{%- set body = site.body | deepmerge( body ) -%}
 	{%- set ga = site.ga | deepmerge( ga ) -%}
 
@@ -18,7 +17,7 @@
 		{% include './jsonld.njk' %}
 
 		{# --- 👉 Appended <head> items --- #}
-		{% for append in head.append | default( [] ) %}
+		{% for append in body.head.append | default( [] ) %}
 			{{ append | safe }}
 		{% endfor %}
 	</head>

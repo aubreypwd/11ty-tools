@@ -1,6 +1,3 @@
-{% if ( ga.enabled | default( true ) ) and ( ga.config.id | default( false ) ) %}
-	{% ga4
-		ga.config.id,
-		ga.config | default( {} )
-	%}
+{% if ga.id | default( false ) %}
+	{% ga4 ga %}
 {% endif %}

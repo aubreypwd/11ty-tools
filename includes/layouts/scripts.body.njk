@@ -1,3 +1,5 @@
+{% set disabled = site.disabled | default( [] ) %}
+
 {% for key, script in body.js.scripts | default( {} ) %}
 	{% if script.src and script.inline %}
 		<script type="text/javascript" {{ script.attrs | default( '' ) }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
@@ -7,9 +9,11 @@
 {% endfor %}
 
 {# --- 👉 main.js --- #}
-{% if ( 'assets/js/main.js' | fileExists ) and ( body.js.main.enabled | default( true ) ) %}
+{% if ( 'assets/js/main.js' | fileExists ) %}
 	<script src="/assets/js/main.js" {{ body.js.main.attrs | default( '' ) }}></script>
 {% endif %}
 
 {# --- 👉 Always load bundled js in the body --- #}
-<script type="text/javascript">{% getBundle 'js' %}</script>
+{% if not disabled.includes( 'bundle' ) %}
+	<script type="text/javascript">{% getBundle 'js' %}</script>
+{% endif %}

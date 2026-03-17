@@ -3,7 +3,7 @@
 {% set meta = site.meta | deepmerge( meta ) %}
 {% set metagen = site.metagen | deepmerge( metagen ) %}
 
-{% if metagen.enabled | default( true ) %}
+{% if meta | default( {} ) | length %}
 
 	{% metagen {
 		title: metagen.config.title | default( title ),

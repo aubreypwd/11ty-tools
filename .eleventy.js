@@ -14,6 +14,8 @@ module.exports = function ( eleventyConfig ) {
 				includes: '_includes',
 				output: 'docs'
 			},
+			disabled: [],
+			configs: {},
 			htmlTemplateEngine: 'njk',
 			markdownTemplateEngine: 'njk',
 		},
@@ -61,10 +63,10 @@ module.exports = function ( eleventyConfig ) {
 			'xml',
 			'liquid'
 		],
-		config['setTemplateFormats'] ?? []
+		config.configs['setTemplateFormats'] ?? []
 	) );
 
-	if ( config.head?.css?.boostrap?.grid?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'bootstrapGrid' ) ) {
 
 		// Get the bootstrap grid for free.
 		eleventyConfig.addPassthroughCopy( {
@@ -73,13 +75,14 @@ module.exports = function ( eleventyConfig ) {
 		} );
 	}
 
-	if ( config.metagen?.enabled ?? true ) {
+	// See base layout for what this does.
+	if ( ! config.disabled.includes( 'metagen' ) ) {
 
 		// See base layout for what this does.
-		eleventyConfig.addPlugin( require( 'eleventy-plugin-metagen' ), config.metagen?.config?.['addPlugin']?.['eleventy-plugin-metagen'] ?? {} );
+		eleventyConfig.addPlugin( require( 'eleventy-plugin-metagen' ), config.configs.metagen?.['addPlugin']?.['eleventy-plugin-metagen'] ?? {} );
 	}
 
-	if ( config.img?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'eleventyImageTransformPlugin' ) ) {
 
 		// https://www.11ty.dev/docs/plugins/image/, auto-transforms <img> for us.
 		const { eleventyImageTransformPlugin } = require( '@11ty/eleventy-img' );
@@ -113,11 +116,11 @@ module.exports = function ( eleventyConfig ) {
 					return `${id}/${ required.path.parse( src ).name }-${width}.${format}`;
 				},
 			},
-			config.img?.config?.['addPlugin']?.['eleventyImageTransformPlugin'] ?? {}
+			config.configs.eleventyImageTransformPlugin?.['addPlugin']?.['eleventyImageTransformPlugin'] ?? {}
 		) );
 	}
 
-	if ( config.eleventyImg?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'eleventyImgPassthrough' ) ) {
 
 		// Passthrough any /src/assets/img/passthrough > /docs/assets/img/*.webp.
 		eleventyConfig.on( 'eleventy.after', async () => {
@@ -146,7 +149,7 @@ module.exports = function ( eleventyConfig ) {
 							urlPath: '/assets/img/',
 							filenameFormat: () => `${ required.path.parse( file ).name }.webp`,
 						},
-						config.eleventyImg?.config?.['Image']?.['@11ty/eleventy-img'] ?? {}
+						config.configs.eleventyImgPassthrough?.['Image']?.['@11ty/eleventy-img'] ?? {}
 					)
 				)
 					// Constole messages...
@@ -157,7 +160,7 @@ module.exports = function ( eleventyConfig ) {
 	}
 
 	// CSS
-	if ( config.css?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'css' ) ) {
 
 		// CSS just gets copied over, @sardine/eleventy-plugin-tinycss takes care of inline and minifying.
 		eleventyConfig.addTemplateFormats( 'css' );
@@ -168,12 +171,12 @@ module.exports = function ( eleventyConfig ) {
 					return async () => inputContent;
 				},
 			},
-			config.css?.config?.['addExtension']?.['css'] ?? {}
+			config.configs.css?.['addExtension']?.['css'] ?? {}
 		) );
 	}
 
 	// JS
-	if ( config.js?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'js' ) ) {
 
 		// JS goes through esbuild so we don't have to worry about what we write.
 		eleventyConfig.addTemplateFormats( 'js' );
@@ -201,36 +204,36 @@ module.exports = function ( eleventyConfig ) {
 							minify: ( process.env.ELEVENTY_ENV === 'production' ) ? true : false,
 							sourcemap: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
 						},
-						config.js?.config?.['build']?.['esbuild'] ?? {}
+						config.configs.js?.['build']?.['esbuild'] ?? {}
 					) );
 
 					// Write the file esbuild gave us.
 					return async () => result.outputFiles[0].text ?? '';
 				},
 			},
-			config.js?.config?.['addExtension']?.['js'] ?? {}
+			config.configs.js?.['addExtension']?.['js'] ?? {}
 		) );
 	}
 
 	// Add support for simple bundling.
-	if ( config.bundle?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'bundle' ) ) {
 
 		const { EleventyRenderPlugin } = require( '@11ty/eleventy' );
-		eleventyConfig.addPlugin( EleventyRenderPlugin, config.bundle?.config?.['addPlugin']?.['EleventyRenderPlugin'] ?? {} );
+		eleventyConfig.addPlugin( EleventyRenderPlugin, config.configs.bundle?.['addPlugin']?.['EleventyRenderPlugin'] ?? {} );
 
-		eleventyConfig.addBundle( 'js', config.bundle?.config?.['addBundle']?.['js'] ?? {} );
+		eleventyConfig.addBundle( 'js', config.configs.bundle?.['addBundle']?.['js'] ?? {} );
 		eleventyConfig.addBundle( 'css', required.deepmerge(
 			{
 
 				// Take any <style> and bundle it into a single <style>.
 				bundleHtmlContentFromSelector: 'style',
 			},
-			config.bundle?.config?.['addBundle']?.['css'] ?? {}
+			config.configs.bundle?.['addBundle']?.['css'] ?? {}
 		) );
 	}
 
 	// https://www.npmjs.com/package/@sardine/eleventy-plugin-tinycss, makes all styles, purges (only link href=""), and inlines it all per-page.
-	if ( config.tinyCss?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'tinyCss' ) ) {
 
 		eleventyConfig.addPlugin( require( '@sardine/eleventy-plugin-tinycss' ), required.deepmerge(
 			{
@@ -256,15 +259,15 @@ module.exports = function ( eleventyConfig ) {
 							},
 						],
 					},
-					config.tinyCss?.config?.['purgeCSS']?.['@sardine/eleventy-plugin-tinycss'] ?? {}
+					config.configs.tinyCss?.['purgeCSS']?.['@sardine/eleventy-plugin-tinycss'] ?? {}
 				),
 			},
-			config.tinyCss?.config?.['addPlugin']?.['@sardine/eleventy-plugin-tinycss'] ?? {}
+			config.configs.tinyCss?.['addPlugin']?.['@sardine/eleventy-plugin-tinycss'] ?? {}
 		) );
 	}
 
 	// https://www.npmjs.com/package/@sardine/eleventy-plugin-tinyhtml, minify and optimize HTML.
-	if ( config.tinyHtml?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'tinyHtml' ) ) {
 
 		eleventyConfig.addPlugin( require( '@sardine/eleventy-plugin-tinyhtml' ), required.deepmerge(
 			{
@@ -274,27 +277,27 @@ module.exports = function ( eleventyConfig ) {
 				sortAttributes: false,
 				sortClassName: false,
 			},
-			config.tinyHtml?.config?.['addPlugin']?.['@sardine/eleventy-plugin-tinyhtml'] ?? {}
+			config.configs.tinyHtml?.['addPlugin']?.['@sardine/eleventy-plugin-tinyhtml'] ?? {}
 		) );
 	}
 
 	// Google fonts: auto-inline and pre-connect.
-	if ( config.head?.google?.fonts?.enabled ?? true ) {
-		eleventyConfig.addPlugin( require( 'eleventy-google-fonts' ), config.head?.google?.fonts?.config?.['addPlugin']?.['eleventy-google-fonts'] ?? {} );
+	if ( ! config.disabled.includes( 'eleventyGoogleFonts' ) ) {
+		eleventyConfig.addPlugin( require( 'eleventy-google-fonts' ), config.configs.eleventyGoogleFonts?.['addPlugin']?.['eleventy-google-fonts'] ?? {} );
 	}
 
 	// Sanitize.css
-	if ( config.head?.css?.sanitize?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'sanitizeCss' ) ) {
 		eleventyConfig.addPassthroughCopy( required.deepmerge(
 			{
 				'node_modules/sanitize.css/*.css': 'assets/css/sanitize.css'
 			},
-			config.head?.css?.sanitize?.config?.['addPassthroughCopy']?.['sanitize.css'] ?? {}
+			config.configs.sanitizeCss?.['addPassthroughCopy']?.['sanitize.css'] ?? {}
 		) );
 	}
 
 	// SASS
-	if ( config.sass?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'sass' ) ) {
 
 		// Add SASS support.
 		eleventyConfig.addPlugin(
@@ -310,13 +313,13 @@ module.exports = function ( eleventyConfig ) {
 						]
 					},
 				},
-				config.sass?.config?.['addPlugin']?.['eleventy-sass'] ?? {}
+				config.configs.sass?.['addPlugin']?.['eleventy-sass'] ?? {}
 			)
 		);
 	}
 
 	// sitemap.xml
-	if ( config.sitemap?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'sitemap' ) ) {
 
 		// Generate a sitemap.
 		eleventyConfig.addPlugin( require( '@quasibit/eleventy-plugin-sitemap' ), required.deepmerge(
@@ -325,12 +328,12 @@ module.exports = function ( eleventyConfig ) {
 					hostname: config.baseUrl,
 				},
 			},
-			config.sitemap?.config?.['addPlugin']?.['@quasibit/eleventy-plugin-sitemap'] ?? {}
+			config.configs.sitemap?.['addPlugin']?.['@quasibit/eleventy-plugin-sitemap'] ?? {}
 		) );
 	}
 
 	// robots.txt
-	if ( config.robots?.enabled ?? true ) {
+	if ( ! config.disabled.includes( 'robots' ) ) {
 
 		// robots.txt, https://www.npmjs.com/package/eleventy-plugin-robotstxt
 		eleventyConfig.addPlugin( require( 'eleventy-plugin-robotstxt'), required.deepmerge(
@@ -354,14 +357,14 @@ module.exports = function ( eleventyConfig ) {
 					[ '*', [ { allow: '/' } ] ],
 				] ),
 			},
-			config.robots?.config?.['addPlugin']?.['eleventy-plugin-robotstxt'] ?? {}
+			config.configs.robots?.['addPlugin']?.['eleventy-plugin-robotstxt'] ?? {}
 		) );
 
 		// Auto noopener
-		if ( config.noopener?.enabled ) {
+		if ( ! config.disabled.includes( 'noopener' ) ) {
 
 			// https://www.npmjs.com/package/eleventy-plugin-automatic-noopener, automatically add noopener, etc.
-			eleventyConfig.addPlugin( require( 'eleventy-plugin-automatic-noopener' ), config.noopener?.config?.['addPlugin']?.['eleventy-plugin-automatic-noopener'] ?? {} );
+			eleventyConfig.addPlugin( require( 'eleventy-plugin-automatic-noopener' ), config.configs.noopener?.['addPlugin']?.['eleventy-plugin-automatic-noopener'] ?? {} );
 		}
 	}
 
