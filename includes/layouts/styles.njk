@@ -1,0 +1,24 @@
+{% from "../../macros/css.njk" import css %}
+
+{% if head.css.sanitize.enabled | default( true ) %}
+	<link rel="stylesheet" href="/assets/css/sanitize.css/assets.css">
+	<link rel="stylesheet" href="/assets/css/sanitize.css/forms.css">
+	<link rel="stylesheet" href="/assets/css/sanitize.css/reduce-motion.css">
+	<link rel="stylesheet" href="/assets/css/sanitize.css/sanitize.css">
+	<link rel="stylesheet" href="/assets/css/sanitize.css/system-ui.css">
+	<link rel="stylesheet" href="/assets/css/sanitize.css/typography.css">
+	<link rel="stylesheet" href="/assets/css/sanitize.css/ui-monospace.css">
+{% endif %}
+
+{% if head.css.boostrap.grid.enabled | default( true ) %}
+	<link rel="stylesheet" href="/assets/css/boostrap/bootstrap-grid.min.css">
+{% endif %}
+
+{# --- 👉 Critical CSS (global) --- #}
+{% if ( 'assets/css/critical.css' | fileExists ) and ( head.css.critical.enabled | default( true ) ) %}
+	<link rel="stylesheet" href="/assets/css/critical.css">
+{% endif %}
+
+{# --- 👉 CSS in <head> --- #}
+{{ css( head.css | default( {} ) ) }}
+<style>{% getBundle "css" %}</style>

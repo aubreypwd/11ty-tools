@@ -5,72 +5,26 @@
 ---
 <!DOCTYPE html>
 <html lang="{{ site.lang or 'en-US' }}">
-
-	{# --- 👉 Macros for the layout: don't end up in the DOM --- #}
-	{% from "../../macros/css.njk" import css %}
+	{%- set head = site.head | deepmerge( head ) -%}
+	{%- set body = site.body | deepmerge( body ) -%}
+	{%- set ga = site.ga | deepmerge( ga ) -%}
 
 	<head>
-		{# --- 👉 Meta --- #}
-		{% include '../meta.njk' %}
-
-		{# --- 👉 Google fonts (add to _data/site.js or frontmatter) --- #}
-		{% if head.google.fonts.enabled | default( site.head.google.fonts.enabled ) | default( true ) %}
-			{% for href in head.google.fonts.config | default( site.head.google.fonts.config ) | default( [] ) %}
-				{% eleventyGoogleFonts href %}
-			{% endfor %}
-		{% endif %}
-
-		{# --- 👉 Google Analytics --- #}
-		{% if ( ga.enabled | default( site.ga.enabled ) | default( true ) ) and ( ga.config.id | default( site.ga.config.id ) | default( false ) ) %}
-			{% ga4
-				ga.config.id | default( site.ga.config.id ),
-				ga.config | default( site.ga.config ) | default( {} )
-			%}
-		{% endif %}
-
-		{# --- 👉 sanitize.css --- #}
-		{% if head.css.sanitize.enabled | default( site.head.css.sanitize.enabled ) | default( true ) %}
-			<link rel="stylesheet" href="/assets/css/sanitize.css/assets.css">
-			<link rel="stylesheet" href="/assets/css/sanitize.css/forms.css">
-			<link rel="stylesheet" href="/assets/css/sanitize.css/reduce-motion.css">
-			<link rel="stylesheet" href="/assets/css/sanitize.css/sanitize.css">
-			<link rel="stylesheet" href="/assets/css/sanitize.css/system-ui.css">
-			<link rel="stylesheet" href="/assets/css/sanitize.css/typography.css">
-			<link rel="stylesheet" href="/assets/css/sanitize.css/ui-monospace.css">
-		{% endif %}
-
-		{% if head.css.boostrap.grid.enabled | default( site.head.css.boostrap.grid.enabled ) | default( true ) %}
-			<link rel="stylesheet" href="/assets/css/boostrap/bootstrap-grid.min.css">
-		{% endif %}
-
-		{# --- 👉 Critical CSS (global) --- #}
-		{% if ( 'assets/css/critical.css' | fileExists ) and ( head.css.critical.enabled | default( site.head.css.critical.enabled ) | default( true ) ) %}
-			<link rel="stylesheet" href="/assets/css/critical.css">
-		{% endif %}
-
-		{# --- 👉 Scripts in the <head> --- #}
-		{% for script in head.js | default( site.head.js ) | default( [] ) %}
-			{% if script.src and script.inline %}
-				<script type="text/javascript" {{ script.attrs | default( '' ) }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
-			{% elif script.src %}
-				<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
-			{% endif %}
-		{% endfor %}
-
-		{# --- 👉 CSS in <head> --- #}
-		{{ css( head.css | default( site.head.css ) | default( [] ) ) }}
-		<style>{% getBundle "css" %}</style>
-
-		{% include '../jsonld.njk' %}
+		{% include './meta.njk' %}
+		{% include './google-fonts.njk' %}
+		{% include './ga4.njk' %}
+		{% include './styles.njk' %}
+		{% include './scripts.head.njk' %}
+		{% include './jsonld.njk' %}
 
 		{# --- 👉 Appended <head> items --- #}
-		{% for append in head.append | default( site.head.append ) | default( [] ) %}
+		{% for append in head.append | default( [] ) %}
 			{{ append | safe }}
 		{% endfor %}
 	</head>
 
-	<body class="{{ body.class | default( site.body.class ) | default ( '' ) }}">
-		<main class="{{ body.main.class | default( site.body.main.class ) | default( '' ) }}">
+	<body class="{{ body.class | default ( '' ) }}">
+		<main class="{{ body.main.class | default( '' ) }}">
 			{% if content %}
 				{% if markdown != false %}
 					{{ content | markdown | safe }}
@@ -80,21 +34,6 @@
 			{% endif %}
 		</main>
 
-		{# --- 👉 Scripts in the body --- #}
-		{% for script in body.js | default( site.body.js ) | default( [] ) %}
-			{% if script.src and script.inline %}
-				<script type="text/javascript" {{ script.attrs | default( '' ) }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
-			{% elif script.src %}
-				<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
-			{% endif %}
-		{% endfor %}
-
-		{# --- 👉 main.js --- #}
-		{% if ( 'assets/js/main.js' | fileExists ) and ( js.main.enabled | default( site.js.main.enabled ) | default( true ) ) %}
-			<script src="/assets/js/main.js" {{ js.main.config.attrs | default( site.js.main.config.attrs ) | default( '' ) }}></script>
-		{% endif %}
-
-		{# --- 👉 Always load bundled js in the body --- #}
-		<script type="text/javascript">{% getBundle 'js' %}</script>
+		{% include './scripts.body.njk' %}
 	</body>
 </html>

@@ -1,0 +1,5 @@
+{% if head.google.fonts.enabled | default( true ) %}
+	{% for href in head.google.fonts.config | default( [] ) %}
+		{% eleventyGoogleFonts href %}
+	{% endfor %}
+{% endif %}
