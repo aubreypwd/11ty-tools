@@ -7,7 +7,6 @@
 <html lang="{{ site.lang or 'en-US' }}">
 
 	{# --- 👉 Macros for the layout: don't end up in the DOM --- #}
-	{% from "../../macros/scripts.njk" import scripts %}
 	{% from "../../macros/css.njk" import css %}
 
 	<head>
@@ -15,22 +14,22 @@
 		{% include '../meta.njk' %}
 
 		{# --- 👉 Google fonts (add to _data/site.js or frontmatter) --- #}
-		{% for href in head.google.fonts | default( site.head.google.fonts ) | default( [] ) %}
-			{% eleventyGoogleFonts href %}
-		{% endfor %}
+		{% if head.google.fonts.enabled | default( site.head.google.fonts.enabled ) | default( true ) %}
+			{% for href in head.google.fonts.config | default( site.head.google.fonts.config ) | default( [] ) %}
+				{% eleventyGoogleFonts href %}
+			{% endfor %}
+		{% endif %}
 
 		{# --- 👉 Google Analytics --- #}
-		{% if ga4.id | default( site.ga4.id ) | default( false ) %}
+		{% if ( ga.enabled | default( site.ga.enabled ) | default( true ) ) and ( ga.config.id | default( site.ga.config.id ) | default( false ) ) %}
 			{% ga4
-				ga4.id | default( site.ga4.id ),
-				{
-					force: ga4.force | default( site.ga4.force ) | default( false )
-				}
+				ga.config.id | default( site.ga.config.id ),
+				ga.config | default( site.ga.config ) | default( {} )
 			%}
 		{% endif %}
 
 		{# --- 👉 sanitize.css --- #}
-		{% if head.css.sanitize.load | default( site.head.css.sanitize.load ) | default( true ) %}
+		{% if head.css.sanitize.enabled | default( site.head.css.sanitize.enabled ) | default( true ) %}
 			<link rel="stylesheet" href="/assets/css/sanitize.css/assets.css">
 			<link rel="stylesheet" href="/assets/css/sanitize.css/forms.css">
 			<link rel="stylesheet" href="/assets/css/sanitize.css/reduce-motion.css">
@@ -40,21 +39,28 @@
 			<link rel="stylesheet" href="/assets/css/sanitize.css/ui-monospace.css">
 		{% endif %}
 
-		{% if head.css.boostrap.grid | default( site.head.css.boostrap.grid ) | default( true ) %}
+		{% if head.css.boostrap.grid.enabled | default( site.head.css.boostrap.grid.enabled ) | default( true ) %}
 			<link rel="stylesheet" href="/assets/css/boostrap/bootstrap-grid.min.css">
 		{% endif %}
 
 		{# --- 👉 Critical CSS (global) --- #}
-		{% if ( 'assets/css/critical.css' | fileExists ) and ( head.css.critical.load | default( site.head.css.critical.load ) | default( true ) ) %}
+		{% if ( 'assets/css/critical.css' | fileExists ) and ( head.css.critical.enabled | default( site.head.css.critical.enabled ) | default( true ) ) %}
 			<link rel="stylesheet" href="/assets/css/critical.css">
 		{% endif %}
 
 		{# --- 👉 Scripts in the <head> --- #}
-		{{ scripts( head.js | default( site.head.js ) )}}
+		{% scripts
+			head.js | default( site.head.js ) | default( [] ),
+			{
+				bundle: {
+					file: 'head.bundle.js'
+				}
+			}
+		%}
 
-		{# --- 👉 Extra <head> items --- #}
-		{% for extra in head.extra | default( site.head.extra ) | default( [] ) %}
-			{{ extra | safe }}
+		{# --- 👉 Appended <head> items --- #}
+		{% for append in head.append | default( site.head.append ) | default( [] ) %}
+			{{ append | safe }}
 		{% endfor %}
 
 		{# --- 👉 CSS in <head> --- #}
@@ -76,11 +82,18 @@
 		</main>
 
 		{# --- 👉 Scripts in the body --- #}
-		{{ scripts( body.js | default( site.body.js ) ) }}
+		{% scripts
+			body.js | default( site.body.js ) | default( [] ),
+			{
+				bundle: {
+					file: 'body.bundle.js'
+				}
+			}
+		%}
 
 		{# --- 👉 main.js --- #}
-		{% if ( 'assets/js/main.js' | fileExists ) and ( js.main.load | default( site.js.main.load ) | default( true ) ) %}
-			<script src="/assets/js/main.js" {{ js.main.attrs | default( site.js.main.attrs ) | default( '' ) }}></script>
+		{% if ( 'assets/js/main.js' | fileExists ) and ( js.main.enabled | default( site.js.main.enabled ) | default( true ) ) %}
+			<script src="/assets/js/main.js" {{ js.main.config.attrs | default( site.js.main.config.attrs ) | default( '' ) }}></script>
 		{% endif %}
 
 		{# --- 👉 Always load bundled js in the body --- #}

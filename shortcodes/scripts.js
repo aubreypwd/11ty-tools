@@ -2,8 +2,8 @@ const required = require( '@root/required.js' );
 
 module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'scripts', async function( scripts = [], options = {} ) {
 
-	if ( [] === scripts ) {
-		return; // No scripts, let's not waste out time.
+	if ( scripts.length <= 0  ) {
+		return; // No scripts, let's not waste our time.
 	}
 
 	/**
@@ -117,7 +117,7 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 		}
 
 		// Use local file instead.
-		let code = required.fs.readFileSync( required.path.resolve( eleventyConfig.dir.input, script.src ), 'utf8' );
+		let code = required.fs.readFileSync( required.path.resolve( required.path.join( eleventyConfig.dir.input, script.src ) ), 'utf8' );
 
 		// Optimize code (maybe).
 		if ( script.babel ?? true ) code = await babelifyCode( code );
@@ -167,8 +167,8 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 
 		const outfile = required.path.join( eleventyConfig.dir.output, options.output ?? 'assets/js', options.bundle.file );
 
-		required.fs.mkdirSync( required.path.dirname( outfile ), { recursive: true } )
-			&& required.fs.writeFileSync( outfile, bundledExternalCode );
+		required.fs.mkdirSync( required.path.resolve( required.path.dirname( outfile ) ), { recursive: true } )
+		required.fs.writeFileSync( required.path.resolve( outfile ), bundledExternalCode );
 
 		tags.push( {
 			src: required.path.join( eleventyConfig.pathPrefix, options.base ?? '/', options.output ?? 'assets/js', options.bundle.file ),
@@ -208,8 +208,8 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'script
 			const outfile = required.path.resolve( eleventyConfig.dir.output, script.src );
 
 			// Write it there...
-			required.fs.mkdirSync( required.path.dirname( outfile ), { recursive: true } )
-				&& required.fs.writeFileSync( outfile, code );
+			required.fs.mkdirSync( required.path.dirname( outfile ), { recursive: true } );
+			required.fs.writeFileSync( outfile, code );
 
 			// Add a tag for it.
 			tags.push( {

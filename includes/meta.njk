@@ -1,14 +1,20 @@
 {% set title %}{% if title %}{{ title }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title }}{% endif %}{% endset %}
 
-{% metagen {
-	title: title,
-	url: site.baseUrl + ( page.url | default( '' ) ),
-	desc: site.meta.desc or '',
-	img: site.baseUrl + site.meta.img,
-	img_alt: site.title,
-	twitter_card_type: 'summary_large_image',
-	twitter_handle: site.meta.twitter or '',
-	name: site.meta.author or ''
-} %}
+{% if metagen.enabled | default( site.metagen.enabled ) | default( true ) %}
+
+	{% metagen {
+		title: metagen.config.title | default( site.metagen.config.title ) | default( title ),
+		url: metagen.config.url | default( site.metagen.config.url ) | default( site.baseUrl + ( page.url | default( '' ) ) ),
+		desc: metagen.config.desc | default( site.metagen.config.desc ) | default( site.meta.desc or '' ),
+		img: metagen.config.img | default( site.metagen.config.img ) | default( site.baseUrl + site.meta.img ),
+		img_alt: metagen.config.img_alt | default( site.metagen.config.img_alt ) | default( site.title ),
+		twitter_card_type: metagen.config.twitter_card_type | default( site.metagen.config.twitter_card_type ) | default( 'summary_large_image' ),
+		twitter_handle: metagen.config.twitter_handle | default( site.metagen.config.twitter_handle ) | default( site.meta.twitter or '' ),
+		name: metagen.config.name | default( site.metagen.config.name ) | default( site.meta.author or '' )
+	} %}
+
+{% else %}
+	<title>{{ title }}</title>
+{% endif %}
 
 <meta name="viewport" content="{{ site.meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">

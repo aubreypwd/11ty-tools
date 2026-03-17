@@ -1,7 +1,7 @@
 module.exports = ( eleventyConfig ) => eleventyConfig.addShortcode( 'ga4', ( id, options = {} ) => {
 
 	if ( 'undefined' === typeof id ) {
-		return /* html */ `<!-- Please add ga.id to page frontmatter -->`;
+		return /* html */ `<!-- Please add ga.config.id to page frontmatter -->`;
 	}
 
 	if ( process.env.ELEVENTY_RUN_MODE !== "build" && options.force !== true ) {
