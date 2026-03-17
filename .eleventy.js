@@ -4,24 +4,26 @@ const markdownIt = require( 'markdown-it' );
 // Change stuff here first.
 const site = require( '../../../src/_data/site.js' );
 
-module.exports = function ( eleventyConfig, options = {} ) {
+module.exports = function ( eleventyConfig, flags = {}, overrides = {} ) {
+
+	console.log( overrides );
 
 	// Main config (you can overide these in 11ty-starter).
-	const config = {
-		dir: {
-			input: 'src',
-			includes: '_includes',
-			output: 'docs'
-		},
-		htmlTemplateEngine: 'njk',
-		markdownTemplateEngine: 'njk',
-
-		// Overrides: _data/site.js.
-		...site,
-
-		// Overrides: config args.
-		...( options.config?.options ?? {} )
-	};
+	const config = required.deepmerge(
+		required.deepmerge(
+			{
+				dir: {
+					input: 'src',
+					includes: '_includes',
+					output: 'docs'
+				},
+				htmlTemplateEngine: 'njk',
+				markdownTemplateEngine: 'njk',
+			},
+			overrides.config ?? {}
+		),
+		site
+	);
 
 	// Add a markdown filter.
 	eleventyConfig.addFilter( 'markdown', content => new markdownIt( { html: true } ).render( String( content ) ) );
@@ -33,62 +35,62 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	eleventyConfig.addWatchTarget( __dirname );
 
 	// Base template formats.
-	eleventyConfig.setTemplateFormats( [
-		'html',
-		'njk',
-		'md',
-		'xml',
-		'liquid',
+	eleventyConfig.setTemplateFormats( required.deepmerge(
+		[
+			'html',
+			'njk',
+			'md',
+			'xml',
+			'liquid'
+		],
+		overrides['setTemplateFormats'] ?? []
+	) );
 
-		// Overrides: templateFormats
-		...( options.templateFormats?.options ?? [] )
-	] );
-
-	if ( options.metagen ?? true ) {
+	if ( flags.metagen ?? true ) {
 
 		// See base layout for what this does.
-		eleventyConfig.addPlugin( require( 'eleventy-plugin-metagen' ), options.metagen?.addPlugin?.options ?? {} );
+		eleventyConfig.addPlugin( require( 'eleventy-plugin-metagen' ), overrides['addPlugin']?.['eleventy-plugin-metagen'] ?? {} );
 	}
 
-	if ( options.img ) {
+	if ( flags.img ) {
 
 		// https://www.11ty.dev/docs/plugins/image/, auto-transforms <img> for us.
 		const { eleventyImageTransformPlugin } = require( '@11ty/eleventy-img' );
 
-		eleventyConfig.addPlugin( eleventyImageTransformPlugin, {
-			outputDir: required.path.join( config.dir.output, 'assets/img' ),
-			urlPath: '/assets/img',
-			formats: [ 'avif', 'webp', 'jpeg' ],
-			transformOnRequest: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
-			useCache: false,
-			widths: [
-				// 320,
-				540,
-				720,
-				960,
-				1140,
-				// 1320,
-				// 1920,
-				'auto'
-			],
-			htmlOptions: {
-				imgAttributes: {
-					loading: 'lazy',
-					decoding: 'async',
-				}
-			},
+		eleventyConfig.addPlugin( eleventyImageTransformPlugin, required.deepmerge(
+			{
+				outputDir: required.path.join( config.dir.output, 'assets/img' ),
+				urlPath: '/assets/img',
+				formats: [ 'avif', 'webp', 'jpeg' ],
+				transformOnRequest: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+				useCache: false,
+				widths: [
+					// 320,
+					540,
+					720,
+					960,
+					1140,
+					// 1320,
+					// 1920,
+					'auto'
+				],
+				htmlOptions: {
+					imgAttributes: {
+						loading: 'lazy',
+						decoding: 'async',
+					}
+				},
 
-			// Place files here.
-			filenameFormat: ( id, src, width, format, options ) => {
-				return `${id}/${ required.path.parse( src ).name }-${width}.${format}`;
+				// Place files here.
+				filenameFormat: ( id, src, width, format, options ) => {
+					return `${id}/${ required.path.parse( src ).name }-${width}.${format}`;
+				},
 			},
-
-			// Overrides: images.
-			...( options.img?.addPlugin?.options ?? {} )
-		} );
+			overrides['addPlugin']?.['eleventyImageTransformPlugin'] ?? {}
+		) );
 	}
 
-	if ( options.imgPassthrough ?? true ) {
+	if ( flags.eleventyImg ?? true ) {
 
 		// Passthrough any /src/assets/img/passthrough > /docs/assets/img/*.webp.
 		eleventyConfig.on( 'eleventy.after', async () => {
@@ -110,13 +112,15 @@ module.exports = function ( eleventyConfig, options = {} ) {
 
 				await Image(
 					inputPath,
-					{
-						formats: [ 'webp' ],
-						outputDir: required.path.join( outputDir, required.path.dirname( file ) ),
-						urlPath: '/assets/img/',
-						filenameFormat: () => `${ required.path.parse( file ).name }.webp`,
-						...( options.imgPassthrough?.Image?.options ?? {} )
-					}
+					required.deepmerge(
+						{
+							formats: [ 'webp' ],
+							outputDir: required.path.join( outputDir, required.path.dirname( file ) ),
+							urlPath: '/assets/img/',
+							filenameFormat: () => `${ required.path.parse( file ).name }.webp`,
+						},
+						overrides['Image']?.['@11ty/eleventy-img'] ?? {}
+					)
 				)
 					// Constole messages...
 					.then( ( result ) => console.log( `Created ${ inputPath } -> ${ result.webp[0].outputPath }` ) )
@@ -126,208 +130,211 @@ module.exports = function ( eleventyConfig, options = {} ) {
 	}
 
 	// CSS
-	if ( options.css ?? true ) {
+	if ( flags.css ?? true ) {
 
 		// CSS just gets copied over, @sardine/eleventy-plugin-tinycss takes care of inline and minifying.
 		eleventyConfig.addTemplateFormats( 'css' );
-		eleventyConfig.addExtension( 'css', {
-			outputFileExtension: 'css',
-			compile: async function ( inputContent, inputPath ) {
-				return async () => inputContent;
+		eleventyConfig.addExtension( 'css', required.deepmerge(
+			{
+				outputFileExtension: 'css',
+				compile: async function ( inputContent, inputPath ) {
+					return async () => inputContent;
+				},
 			},
-
-			// Overrides
-			...( options.css?.addExtension?.options ?? {} )
-		} );
+			overrides['addExtension']?.['css'] ?? {}
+		) );
 	}
 
 	// JS
-	if ( options.js ?? true ) {
+	if ( flags.js ?? true ) {
 
 		// JS goes through esbuild so we don't have to worry about what we write.
 		eleventyConfig.addTemplateFormats( 'js' );
-		eleventyConfig.addExtension( 'js', {
-			outputFileExtension: 'js',
-			compile: async function ( inputContent, inputPath ) {
+		eleventyConfig.addExtension( 'js', required.deepmerge(
+			{
+				outputFileExtension: 'js',
+				compile: async function ( inputContent, inputPath ) {
 
-				// esbuild does the stuff...
-				const esbuild = require( 'esbuild' );
+					// esbuild does the stuff...
+					const esbuild = require( 'esbuild' );
 
-				// Process each JS file through esbuild...
-				const result = await esbuild.build( {
-					entryPoints: [ inputPath ],
-					bundle: true,
-					write: false,
-					platform: 'browser',
-					treeShaking: true,
-					format: 'iife', // Not a module.
-					target: [ 'es2015' ], // Works in anything.
-					legalComments: 'none',
+					// Process each JS file through esbuild...
+					const result = await esbuild.build( required.deepmerge(
+						{
+							entryPoints: [ inputPath ],
+							bundle: true,
+							write: false,
+							platform: 'browser',
+							treeShaking: true,
+							format: 'iife', // Not a module.
+							target: [ 'es2015' ], // Works in anything.
+							legalComments: 'none',
 
-					// Allow debugging at least.
-					minify: ( process.env.ELEVENTY_ENV === 'production' ) ? true : false,
-					sourcemap: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+							// Allow debugging at least.
+							minify: ( process.env.ELEVENTY_ENV === 'production' ) ? true : false,
+							sourcemap: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+						},
+						overrides['build']?.['esbuild'] ?? {}
+					) );
 
-					// Overrides: esbuild
-					...( options.js?.addExtension?.esbuild?.options ?? {} )
-				} );
-
-				// Write the file esbuild gave us.
-				return async () => result.outputFiles[0].text ?? '';
+					// Write the file esbuild gave us.
+					return async () => result.outputFiles[0].text ?? '';
+				},
 			},
-
-			// Overrides: js
-			...( options.js?.addExtension?.options ?? {} )
-		} );
+			overrides['addExtension']?.['js'] ?? {}
+		) );
 	}
 
 	// Add support for simple bundling.
-	if ( options.bundle ?? true ) {
+	if ( flags.bundle ?? true ) {
 
 		const { EleventyRenderPlugin } = require( '@11ty/eleventy' );
-		eleventyConfig.addPlugin( EleventyRenderPlugin, options.bundle?.addPlugin?.options ?? {} );
+		eleventyConfig.addPlugin( EleventyRenderPlugin, overrides['addPlugin']?.['EleventyRenderPlugin'] ?? {} );
 
-		eleventyConfig.addBundle( 'js', options.bundle?.js?.options ?? {} );
-		eleventyConfig.addBundle( 'css', {
+		eleventyConfig.addBundle( 'js', overrides['addBundle']?.['js'] ?? {} );
+		eleventyConfig.addBundle( 'css', required.deepmerge(
+			{
 
-			// Take any <style> and bundle it into a single <style>.
-			bundleHtmlContentFromSelector: 'style',
-
-			// Overrides
-			...( options.bundle?.css?.addBundle?.options ?? {} )
-		} );
+				// Take any <style> and bundle it into a single <style>.
+				bundleHtmlContentFromSelector: 'style',
+			},
+			overrides['addBundle']?.['css'] ?? {}
+		) );
 	}
 
 	// https://www.npmjs.com/package/@sardine/eleventy-plugin-tinycss, makes all styles, purges (only link href=""), and inlines it all per-page.
-	if ( options.tinyCss ?? true ) {
+	if ( flags.tinyCss ?? true ) {
 
-		eleventyConfig.addPlugin( require( '@sardine/eleventy-plugin-tinycss' ), {
-			output: `${ config.dir.output }/`,
-			browserslist: 'last 2 version, not dead',
-			purgeCSS: {
-				fontFace: true,
-				variables: true,
-				keyframes: true,
-
-				// @TODO File a bug to try and fix/solve this in the main repo.
-				extractors: [
+		eleventyConfig.addPlugin( require( '@sardine/eleventy-plugin-tinycss' ), required.deepmerge(
+			{
+				output: `${ config.dir.output }/`,
+				browserslist: 'last 2 version, not dead',
+				purgeCSS: required.deepmerge(
 					{
-						extensions: [ 'html' ],
-						extractor: ( content ) => {
+						fontFace: true,
+						variables: true,
+						keyframes: true,
 
-							return content
-								// Remove <style> tags before assessing what to purge.
-								.replace( /<style[\s\S]*?<\/style>/gi, '' )
-								.match( /[A-Za-z0-9-_:\/]+/g ) || [];
-						},
+						// @TODO File a bug to try and fix/solve this in the main repo.
+						extractors: [
+							{
+								extensions: [ 'html' ],
+								extractor: ( content ) => {
+
+									return content
+										// Remove <style> tags before assessing what to purge.
+										.replace( /<style[\s\S]*?<\/style>/gi, '' )
+										.match( /[A-Za-z0-9-_:\/]+/g ) || [];
+								},
+							},
+						],
 					},
-				],
-
-				// Overrides: purgeCSS
-				...( options.tinyCss?.purgeCSS ?? {} )
+					overrides['purgeCSS']?.['@sardine/eleventy-plugin-tinycss'] ?? {}
+				),
 			},
-
-			// Overrides: tinyCss
-			...( options.tinyCss?.addPlugin?.options ?? {} )
-		} );
+			overrides['addPlugin']?.['@sardine/eleventy-plugin-tinycss'] ?? {}
+		) );
 	}
 
 	// https://www.npmjs.com/package/@sardine/eleventy-plugin-tinyhtml, minify and optimize HTML.
-	if ( options.tinyHtml ?? true ) {
+	if ( flags.tinyHtml ?? true ) {
 
-		eleventyConfig.addPlugin( require( '@sardine/eleventy-plugin-tinyhtml' ), {
-			removeAttributeQuotes: false,
-			removeOptionalTags: false,
-			removeComments: false,
-			sortAttributes: false,
-			sortClassName: false,
-
-			// Overrides.
-			...( options.tinyHtml?.addPlugin?.options ?? {} )
-		} );
+		eleventyConfig.addPlugin( require( '@sardine/eleventy-plugin-tinyhtml' ), required.deepmerge(
+			{
+				removeAttributeQuotes: false,
+				removeOptionalTags: false,
+				removeComments: false,
+				sortAttributes: false,
+				sortClassName: false,
+			},
+			overrides['addPlugin']?.['@sardine/eleventy-plugin-tinyhtml'] ?? {}
+		) );
 	}
 
 	// Google fonts: auto-inline and pre-connect.
-	if ( options.googleFonts ?? true ) {
-		eleventyConfig.addPlugin( require( 'eleventy-google-fonts' ), options.googleFonts?.addPlugin?.options ?? {} );
+	if ( flags.googleFonts ?? true ) {
+		eleventyConfig.addPlugin( require( 'eleventy-google-fonts' ), overrides['addPlugin']?.['eleventy-google-fonts'] ?? {} );
 	}
 
 	// Sanitize.css
-	if ( options.sanitizeCss ?? true ) {
-
-		eleventyConfig.addPassthroughCopy( {
-			'node_modules/sanitize.css/*.css': 'assets/css/sanitize.css',
-
-			// Overrides.
-			...( options.sanitizeCss?.addPassthroughCopy?.options ?? {} )
-		} );
+	if ( flags.sanitizeCss ?? true ) {
+		eleventyConfig.addPassthroughCopy( required.deepmerge(
+			{
+				'node_modules/sanitize.css/*.css': 'assets/css/sanitize.css'
+			},
+			overrides['addPassthroughCopy']?.['sanitize.css'] ?? {}
+		) );
 	}
 
 	// SASS
-	if ( options.sass ?? true ) {
+	if ( flags.sass ?? true ) {
 
 		// Add SASS support.
 		eleventyConfig.addPlugin(
 			require( 'eleventy-sass' ),
-			{
-				sass: {
-					silenceDeprecations: [
-						'import',
-						'global-builtin',
-						'color-functions',
-						'if-function'
-					]
+			required.deepmerge(
+				{
+					sass: {
+						silenceDeprecations: [
+							'import',
+							'global-builtin',
+							'color-functions',
+							'if-function'
+						]
+					},
 				},
-				...( options.sass?.addPlugin?.options ?? {} )
-			}
+				overrides['addPlugin']?.['eleventy-sass'] ?? {}
+			)
 		);
 	}
 
 	// sitemap.xml
-	if ( options.sitemap ?? true ) {
+	if ( flags.sitemap ?? true ) {
 
 		// Generate a sitemap.
-		eleventyConfig.addPlugin( require( '@quasibit/eleventy-plugin-sitemap' ), {
-			sitemap: {
-				hostname: config.baseUrl,
+		eleventyConfig.addPlugin( require( '@quasibit/eleventy-plugin-sitemap' ), required.deepmerge(
+			{
+				sitemap: {
+					hostname: config.baseUrl,
+				},
 			},
-			...( options.sitemap?.addPlugin?.options ?? {} )
-		} );
+			overrides['addPlugin']?.['@quasibit/eleventy-plugin-sitemap'] ?? {}
+		) );
 	}
 
 	// robots.txt
-	if ( options.robots ?? true ) {
+	if ( flags.robots ?? true ) {
 
 		// robots.txt, https://www.npmjs.com/package/eleventy-plugin-robotstxt
-		eleventyConfig.addPlugin( require( 'eleventy-plugin-robotstxt'), {
-			sitemapURL: `${ config.baseUrl }/sitemap.xml`,
-			shouldBlockAIRobots: false,
-			rules: new Map( [
+		eleventyConfig.addPlugin( require( 'eleventy-plugin-robotstxt'), required.deepmerge(
+			{
+				sitemapURL: `${ config.baseUrl }/sitemap.xml`,
+				shouldBlockAIRobots: false,
+				rules: new Map( [
 
-				// AI Bots.
-				[ 'GPTBot', [ { allow: '/' } ] ],
-				[ 'ChatGPT-User', [ { allow: '/' } ] ],
-				[ 'ClaudeBot', [ { allow: '/' } ] ],
-				[ 'anthropic-ai', [ { allow: '/' } ] ],
-				[ 'PerplexityBot', [ { allow: '/' } ] ],
-				[ 'Google-Extended', [ { allow: '/' } ] ],
-				[ 'Applebot-Extended', [ { allow: '/' } ] ],
-				[ 'Amazonbot', [ { allow: '/' } ] ],
-				[ 'Bytespider', [ { allow: '/' } ] ],
+					// AI Bots.
+					[ 'GPTBot', [ { allow: '/' } ] ],
+					[ 'ChatGPT-User', [ { allow: '/' } ] ],
+					[ 'ClaudeBot', [ { allow: '/' } ] ],
+					[ 'anthropic-ai', [ { allow: '/' } ] ],
+					[ 'PerplexityBot', [ { allow: '/' } ] ],
+					[ 'Google-Extended', [ { allow: '/' } ] ],
+					[ 'Applebot-Extended', [ { allow: '/' } ] ],
+					[ 'Amazonbot', [ { allow: '/' } ] ],
+					[ 'Bytespider', [ { allow: '/' } ] ],
 
-				// All others.
-				[ '*', [ { allow: '/' } ] ],
-			] ),
-
-			// Overrides.
-			...( options.robots?.addPlugin?.options ?? {} )
-		} );
+					// All others.
+					[ '*', [ { allow: '/' } ] ],
+				] ),
+			},
+			overrides['addPlugin']?.['eleventy-plugin-robotstxt'] ?? {}
+		) );
 
 		// Auto noopener
-		if ( options.noopener ) {
+		if ( flags.noopener ) {
 
 			// https://www.npmjs.com/package/eleventy-plugin-automatic-noopener, automatically add noopener, etc.
-			eleventyConfig.addPlugin( require( 'eleventy-plugin-automatic-noopener' ), options.noopener?.addPlugin?.options ?? {} );
+			eleventyConfig.addPlugin( require( 'eleventy-plugin-automatic-noopener' ), overrides['addPlugin']?.['eleventy-plugin-automatic-noopener'] ?? {} );
 		}
 	}
 
