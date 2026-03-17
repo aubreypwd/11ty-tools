@@ -40,6 +40,10 @@
 			<link rel="stylesheet" href="/assets/css/sanitize.css/ui-monospace.css">
 		{% endif %}
 
+		{% if head.css.boostrap.grid | default( site.head.css.boostrap.grid ) | default( true ) %}
+			<link rel="stylesheet" href="/assets/css/boostrap/bootstrap-grid.min.css">
+		{% endif %}
+
 		{# --- 👉 Critical CSS (global) --- #}
 		{% if ( 'assets/css/critical.css' | fileExists ) and ( head.css.critical.load | default( site.head.css.critical.load ) | default( true ) ) %}
 			<link rel="stylesheet" href="/assets/css/critical.css">

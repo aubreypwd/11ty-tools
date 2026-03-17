@@ -44,6 +44,15 @@ module.exports = function ( eleventyConfig, flags = {}, overrides = {} ) {
 		overrides['setTemplateFormats'] ?? []
 	) );
 
+	if ( flags.boostrap?.grid ?? true ) {
+
+		// Get the bootstrap grid for free.
+		eleventyConfig.addPassthroughCopy( {
+			'node_modules/bootstrap/dist/css/bootstrap-grid.min.css': 'assets/css/boostrap/bootstrap-grid.min.css' ,
+			'node_modules/bootstrap/dist/css/bootstrap-grid.min.css.map': 'assets/css/boostrap/bootstrap-grid.min.css.map'
+		} );
+	}
+
 	if ( flags.metagen ?? true ) {
 
 		// See base layout for what this does.
