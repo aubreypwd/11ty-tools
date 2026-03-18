@@ -5,9 +5,6 @@
 ---
 <!DOCTYPE html>
 <html lang="{{ site.lang or 'en-US' }}">
-	{%- set pageBody = body | default( {} ) -%}
-	{%- set body = site.body | deepmerge( pageBody ) -%}
-
 	<head>
 		{% include './meta.njk' %}
 		{% include './google-fonts.njk' %}
@@ -22,8 +19,8 @@
 		{% endfor %}
 	</head>
 
-	<body class="{{ ( site.body.class | default( '' ) ~ ' ' ~ pageBody.class | default( '' ) ) | trim }}">
-		<main class="{{ ( site.body.main.class | default( '' ) ~ ' ' ~ pageBody.main.class | default( '' ) ) | trim }}">
+	<body class="{{ site.body.class }} {{ body.class }}">
+		<main class="{{ site.body.main.class }} {{ body.main.class }}">
 			{% if content %}
 				{% if markdown != false %}
 					{{ content | markdown | safe }}
