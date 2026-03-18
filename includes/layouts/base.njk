@@ -7,7 +7,6 @@
 <html lang="{{ site.lang or 'en-US' }}">
 	{%- set pageBody = body | default( {} ) -%}
 	{%- set body = site.body | deepmerge( pageBody ) -%}
-	{%- set ga = site.ga | deepmerge( ga ) -%}
 	{% set bodyClass %}{{ site.body.class | default( '' ) }} {{ pageBody.class | default( '' ) }}{% endset %}
 	{% set mainClass %}{{ site.body.main.class | default( '' ) }} {{ pageBody.main.class | default( '' ) }}{% endset %}
 
