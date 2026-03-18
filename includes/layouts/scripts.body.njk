@@ -2,15 +2,15 @@
 
 {% for key, script in body.js.scripts | default( {} ) %}
 	{% if script.src and script.inline %}
-		<script type="text/javascript" {{ script.attrs | default( '' ) }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
+		<script type="text/javascript" {{ script.attrs | default( '' ) | safe }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
 	{% elif script.src %}
-		<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) }}></script>
+		<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) | safe }}></script>
 	{% endif %}
 {% endfor %}
 
 {# --- 👉 main.js --- #}
 {% if ( 'assets/js/main.js' | fileExists ) %}
-	<script src="/assets/js/main.js" {{ body.js.main.attrs | default( '' ) }}></script>
+	<script src="/assets/js/main.js" {{ body.js.main.attrs | default( '' ) | safe }}></script>
 {% endif %}
 
 {# --- 👉 Always load bundled js in the body --- #}
