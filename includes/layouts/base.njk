@@ -5,10 +5,7 @@
 ---
 <!DOCTYPE html>
 <html lang="{{ site.lang or 'en-US' }}">
-	{%- set pageBody = body | default( {} ) -%}
-	{%- set body = site.body | deepmerge( pageBody ) -%}
-	{% set bodyClass %}{{ site.body.class | default( '' ) }} {{ pageBody.class | default( '' ) }}{% endset %}
-	{% set mainClass %}{{ site.body.main.class | default( '' ) }} {{ pageBody.main.class | default( '' ) }}{% endset %}
+	{%- set body = site.body | deepmerge( body | default( {} ) ) -%}
 
 	<head>
 		{% include './meta.njk' %}
@@ -24,8 +21,8 @@
 		{% endfor %}
 	</head>
 
-	<body class="{{ bodyClass | trim }}">
-		<main class="{{ mainClass | trim }}">
+	<body class="{{ body.class | default( '' ) | trim }}">
+		<main class="{{ body.main.class | default( '' ) | trim }}">
 			{% if content %}
 				{% if markdown != false %}
 					{{ content | markdown | safe }}
