@@ -282,9 +282,7 @@ module.exports = function ( eleventyConfig ) {
 	}
 
 	// Google fonts: auto-inline and pre-connect.
-	if ( ! config.disabled.includes( 'eleventyGoogleFonts' ) ) {
-		eleventyConfig.addPlugin( require( 'eleventy-google-fonts' ), config.configs.eleventyGoogleFonts?.['addPlugin']?.['eleventy-google-fonts'] ?? {} );
-	}
+	eleventyConfig.addPlugin( require( 'eleventy-google-fonts' ), config.configs.eleventyGoogleFonts?.['addPlugin']?.['eleventy-google-fonts'] ?? {} );
 
 	// Sanitize.css
 	if ( ! config.disabled.includes( 'sanitizeCss' ) ) {
