@@ -6,12 +6,12 @@
 <!DOCTYPE html>
 <html lang="{{ site.lang or 'en-US' }}">
 	<head>
-		{% include '11ty-starter-common/includes/layouts/includes/meta.njk' %}
-		{% include '11ty-starter-common/includes/layouts/includes/google-fonts.njk' %}
-		{% include '11ty-starter-common/includes/layouts/includes/ga4.njk' %}
-		{% include '11ty-starter-common/includes/layouts/includes/styles.njk' %}
-		{% include '11ty-starter-common/includes/layouts/includes/scripts.head.njk' %}
-		{% include '11ty-starter-common/includes/layouts/includes/jsonld.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/meta.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/google-fonts.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/ga4.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/styles.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/scripts.head.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/jsonld.njk' %}
 
 		{# --- 👉 Appended <head> items --- #}
 		{% for append in body.head.append | default( [] ) %}
@@ -30,6 +30,6 @@
 			{% endif %}
 		</main>
 
-		{% include '11ty-starter-common/includes/layouts/includes/scripts.body.njk' %}
+		{% include '11ty-starter-common/includes/layouts/partials/scripts.body.njk' %}
 	</body>
 </html>
