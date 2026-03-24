@@ -1,6 +1,4 @@
 .DS_Store
 node_modules
-.plugin-clean
-.sublime-project.sublime-workspace
-# Local Netlify folder
-.netlify
+/node_modules
+.DS_Store
