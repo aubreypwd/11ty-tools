@@ -1,15 +1,15 @@
 const site = {
-	baseUrl: 'https://example.com',
+	baseUrl: 'https://505spotlight.com',
 	lang: 'en-US',
-	title: 'Site Title',
+	title: '505 Spotlight',
 	disabled: [],
 	configs: {},
 
 	meta: {
-		desc: 'Site description',
+		desc: '505 Spotlight',
 		img: '/assets/img/example.webp', // Required for jsonld too, advise to set.
-		twitter: 'example',
-		author: 'My Name'
+		twitter: '',
+		author: 'Aubrey Portwood'
 	}
 };
 
@@ -20,37 +20,34 @@ site.jsonld = {
 		description: 'Generic page description.',
 	} ),
 	Person: require( '../_includes/11ty-starter-common/data/jsonld/person.js' )( site, {
-		jobTitle: 'Generic Role',
-		telephone: '+15555550100',
-		email: 'hello@example.com',
+		jobTitle: 'Content Director',
+		telephone: '+13142827391',
+		email: 'contact@505spotlight.com',
 		sameAs: [
-			'https://example.com/profile-a/',
-			'https://example.com/profile-b/',
+			'https://twitter.com/aubreypwd',
+			'https://hireaubrey.com'
 		],
 		knowsAbout: [
-			'Topic A',
-			'Topic B',
-			'Topic C',
+			'Albuquerque, New Mexico',
+			'Rio Rancho, New Mexico',
+			'Los Ranchos, New Mexico',
+			'Corralles, New Mexico'
 		]
 	} ),
 	LocalBusiness: require( '../_includes/11ty-starter-common/data/jsonld/local-business.js' )( site, {
-		priceRange: '$',
-		telephone: '+15555550000',
-		streetAddress: '123 Example Street',
-		areaServed: 'Region A',
-		sameAs: [
-			'https://example.com/listing-a/',
-			'https://example.com/listing-b/',
-		],
+		// priceRange: '',
+		telephone: '+13142827391',
+		// streetAddress: '123 Example Street',
+		areaServed: 'Albuquerque, New Mexico',
+		sameAs: [],
 		openingHours: [
-			'Mo-Fr 08:00-18:00',
-			'Sa 09:00-14:00',
+			'Mo-Fr 08:00-18:00'
 		],
 		address: {
-			postalCode: '00000',
-			streetAddress: '123 Example Street',
-			addressLocality: 'City A',
-			addressRegion: 'State A',
+			// postalCode: '87114',
+			// streetAddress: '',
+			// addressLocality: '',
+			addressRegion: 'NM',
 			addressCountry: 'US',
 		}
 	} ),
@@ -61,24 +58,6 @@ site.jsonld = {
 			description: 'Generic description for Service A.',
 			serviceType: 'Category A',
 			areaServed: 'Region A',
-		}
-	),
-	ServiceB: require( '../_includes/11ty-starter-common/data/jsonld/service.js' )(
-		site,
-		'Service B',
-		{
-			description: 'Generic description for Service B.',
-			serviceType: 'Category B',
-			areaServed: 'Region B',
-		}
-	),
-	ServiceC: require( '../_includes/11ty-starter-common/data/jsonld/service.js' )(
-		site,
-		'Service C',
-		{
-			description: 'Generic description for Service C.',
-			serviceType: 'Category C',
-			areaServed: 'Region C',
 		}
 	)
 };

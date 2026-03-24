@@ -1,17 +1,12 @@
 {
-  "name": "@aubreypwd/11ty-starter",
+  "name": "@aubreypwd/11ty-505spotlight.com",
   "version": "0.0.0",
-  "description": "My starter setup for 11ty websites.",
-  "keywords": [
-    "11ty",
-    "eleventy",
-    "jamstack",
-    "starter"
-  ],
+  "description": "505spotlight.com",
+  "keywords": [],
   "homepage": "https://github.com/aubreypwd/11ty-starter",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aubreypwd/11ty-starter.git"
+    "url": "git+https://github.com/aubreypwd/11ty-505spotlight.com.git"
   },
   "license": "UNLICENSED",
   "author": "Aubrey Portwood",
