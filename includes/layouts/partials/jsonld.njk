@@ -1,3 +1,4 @@
+{%- set meta = site.meta | deepmerge( meta ) -%}
 {%- set jsonld = site.jsonld | deepmerge( jsonld ) -%}
 {% for key, item in jsonld %}
 	{% if item and item['@type'] and item['@id'] %}
