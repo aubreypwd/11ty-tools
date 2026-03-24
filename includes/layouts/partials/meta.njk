@@ -18,6 +18,6 @@
 
 {% else %}
 	<title>{{ title }}</title>
+	<meta name="viewport" content="{{ meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
 {% endif %}
 
-<meta name="viewport" content="{{ meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
