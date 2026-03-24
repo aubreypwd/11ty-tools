@@ -1,4 +1,0 @@
-{%- set ga = site.ga | deepmerge( ga ) -%}
-{% if ga.id | default( false ) %}
-	{% ga4 ga %}
-{% endif %}
