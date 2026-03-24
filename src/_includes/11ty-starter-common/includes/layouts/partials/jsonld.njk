@@ -1,0 +1,16 @@
+{%- set jsonld = site.jsonld | deepmerge( jsonld ) -%}
+{% for key, item in jsonld %}
+	{% if item and item['@type'] and item['@id'] %}
+		{% if item['@type'] == 'WebPage' %}
+			{% jsonld item['@type'], item['@id'], item, {},
+				{
+					name: title,
+					url: site.baseUrl + page.url,
+					description: description
+				}
+			%}
+		{% else %}
+			{% jsonld item['@type'], item['@id'], item %}
+		{% endif %}
+	{% endif %}
+{% endfor %}

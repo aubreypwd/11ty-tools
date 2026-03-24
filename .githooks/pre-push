@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+[ "$RUNONCE" = 1 ] || RUNONCE=1 npm run tools:push
