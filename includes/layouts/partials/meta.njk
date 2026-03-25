@@ -6,14 +6,14 @@
 {% if meta | default( {} ) | length %}
 
 	{% metagen {
-		title: metagen.config.title | default( title ),
-		url: metagen.config.url | default( site.baseUrl + ( page.url | default( '' ) ) ),
-		desc: metagen.config.desc | default( meta.desc or '' ),
-		img: metagen.config.img | default( site.baseUrl + meta.img ),
-		img_alt: metagen.config.img_alt | default( site.title ),
-		twitter_card_type: metagen.config.twitter_card_type | default( 'summary_large_image' ),
-		twitter_handle: metagen.config.twitter_handle | default( meta.twitter or '' ),
-		name: metagen.config.name | default( meta.author or '' )
+		title: metagen.title | default( title ),
+		url: metagen.url | default( site.baseUrl + ( page.url | default( '' ) ) ),
+		desc: metagen.desc | default( meta.description ) | default( description ),
+		img: metagen.img | default( '' ),
+		img_alt: metagen.img_alt | default( site.title ),
+		twitter_card_type: metagen.twitter_card_type | default( 'summary_large_image' ),
+		twitter_handle: metagen.twitter_handle | default( meta.twitter or '' ),
+		name: metagen.name | default( meta.author or '' )
 	} %}
 
 {% else %}
