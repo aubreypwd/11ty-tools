@@ -1,23 +1,16 @@
 {% set title %}{% if title %}{{ title }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title }}{% endif %}{% endset %}
 
-{% set meta = site.meta | deepmerge( meta ) %}
-{% set metagen = site.metagen | deepmerge( metagen ) %}
+{% metagen {
+	title: title,
+	url: site.baseUrl + ( page.url | default( '' ) ),
 
-{% if meta | default( {} ) | length %}
+	desc: description | default( site.description ) | default( '' ),
 
-	{% metagen {
-		title: metagen.title | default( title ),
-		url: metagen.url | default( site.baseUrl + ( page.url | default( '' ) ) ),
-		desc: metagen.desc | default( meta.description ) | default( description ),
-		img: metagen.img | default( '' ),
-		img_alt: metagen.img_alt | default( site.title ),
-		twitter_card_type: metagen.twitter_card_type | default( 'summary_large_image' ),
-		twitter_handle: metagen.twitter_handle | default( meta.twitter or '' ),
-		name: metagen.name | default( meta.author or '' )
-	} %}
+	img: img | default( site.img ) | default( '' ),
+	img_alt: img_alt | default( site.img_alt ) | default( site.title ),
 
-{% else %}
-	<title>{{ title }}</title>
-	<meta name="viewport" content="{{ meta.viewport.content | default ( 'width=device-width, initial-scale=1' ) }}">
-{% endif %}
+	twitter_handle: twitter | default( site.twitter ) | default( '' ),
+	twitter_card_type: twitter_card_type | default( site.twitter_card_type ) | default( 'summary_large_image' ),
 
+	name: author | default( site.author ) | default( '' )
+} %}
