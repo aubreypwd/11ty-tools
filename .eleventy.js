@@ -416,6 +416,18 @@ module.exports = function ( eleventyConfig ) {
 		} );
 	} );
 
+	// Auto-load anything in src/_includes/shortcodes/**.js
+	const localShortcodesDir = required.path.join( process.cwd(), config.dir.input, config.dir.includes, '/shortcodes/' );
+
+	if ( required.fs.existsSync( localShortcodesDir ) ) {
+		required.fs.readdirSync(
+			localShortcodesDir, { recursive: true } )
+				.filter( file => file.endsWith( '.js' ) )
+				.map( file => required.path.join( localShortcodesDir, file ) )
+				.forEach( shortcode => require( shortcode )( eleventyConfig )
+		);
+	}
+
 	// Base config that is used in 11ty-starter.
 	return config;
 };
