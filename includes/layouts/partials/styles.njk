@@ -16,11 +16,6 @@
 	<link rel="stylesheet" href="/assets/css/boostrap/bootstrap-grid.min.css">
 {% endif %}
 
-{# --- 👉 Critical CSS (global) --- #}
-{% if ( 'assets/css/critical.css' | fileExists ) %}
-	<link rel="stylesheet" href="/assets/css/critical.css">
-{% endif %}
-
 {# --- 👉 CSS in <head> --- #}
 {{ css( body.head.css | default( {} ) ) }}
 {% if not disabled.includes( 'bundle' ) %}
@@ -34,3 +29,8 @@
 		<link rel="stylesheet" href="{{ style.href }}" {{ style.attrs | default( '' ) | safe }}>
 	{% endif %}
 {% endfor %}
+
+{# --- 👉 Critical CSS (global) --- #}
+{% if ( 'assets/css/critical.css' | fileExists ) %}
+	<link rel="stylesheet" href="/assets/css/critical.css">
+{% endif %}

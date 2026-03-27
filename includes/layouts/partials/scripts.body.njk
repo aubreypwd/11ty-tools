@@ -1,10 +1,5 @@
 {% set disabled = site.disabled | default( [] ) %}
 
-{# --- 👉 main.js --- #}
-{% if ( 'assets/js/main.js' | fileExists ) %}
-	<script src="/assets/js/main.js" {{ body.js.main.attrs | default( '' ) | safe }}></script>
-{% endif %}
-
 {# --- 👉 Always load bundled js in the body --- #}
 {% if not disabled.includes( 'bundle' ) %}
 	<script type="text/javascript">{% getBundle 'js' %}</script>
@@ -17,3 +12,8 @@
 		<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) | safe }}></script>
 	{% endif %}
 {% endfor %}
+
+{# --- 👉 main.js --- #}
+{% if ( 'assets/js/main.js' | fileExists ) %}
+	<script src="/assets/js/main.js" {{ body.js.main.attrs | default( '' ) | safe }}></script>
+{% endif %}
