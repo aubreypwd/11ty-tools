@@ -424,8 +424,10 @@ module.exports = function ( eleventyConfig ) {
 			localShortcodesDir, { recursive: true } )
 				.filter( file => file.endsWith( '.js' ) )
 				.map( file => required.path.join( localShortcodesDir, file ) )
-				.forEach( shortcode => require( shortcode )( eleventyConfig )
-		);
+				.forEach( shortcode => {
+					console.log( `[11ty-starter-common] Loaded ${ shortcode }.`);
+					require( shortcode )( eleventyConfig );
+				} );
 	}
 
 	// Base config that is used in 11ty-starter.
