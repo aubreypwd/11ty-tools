@@ -2,10 +2,12 @@
 
 {# --- 👉 Always load bundled js in the body --- #}
 {% if not disabled.includes( 'bundle' ) %}
-	<script type="text/javascript">{% getBundle 'js' %}</script>
+	<script type="text/javascript">
+		{% getBundle 'js' %}
+	</script>
 {% endif %}
 
-{% for key, script in body.js.scripts | default( {} ) %}
+{% for key, script in site.body.js.scripts | deepmerge( body.js.scripts ) | default( {} ) %}
 	{% if script.src and script.inline %}
 		<script type="text/javascript" {{ script.attrs | default( '' ) | safe }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
 	{% elif script.src %}

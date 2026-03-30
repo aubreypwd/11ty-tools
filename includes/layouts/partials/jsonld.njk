@@ -1,6 +1,4 @@
-{%- set meta = site.meta | deepmerge( meta ) -%}
-{%- set jsonld = site.jsonld | deepmerge( jsonld ) -%}
-{% for key, item in jsonld %}
+{% for key, item in site.jsonld | deepmerge( jsonld ) | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
 		{% if item['@type'] == 'WebPage' %}
 			{% jsonld item['@type'], item['@id'], item, {},

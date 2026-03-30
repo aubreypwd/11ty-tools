@@ -1,3 +1,3 @@
-{% for href in body.head.google.fonts | default( site.body.head.google.fonts ) | default( [] ) %}
+{% for href in site.body.head.google.fonts | deepmerge( body.head.google.fonts ) | default( [] ) %}
 	{% eleventyGoogleFonts href %}
 {% endfor %}

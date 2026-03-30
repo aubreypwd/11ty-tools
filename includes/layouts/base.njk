@@ -14,7 +14,7 @@
 		{% include '11ty-starter-common/includes/layouts/partials/jsonld.njk' %}
 
 		{# --- 👉 Appended <head> items --- #}
-		{% for append in body.head.append | default( site.body.head.append ) | default( [] ) %}
+		{% for append in body.head.append | deepmerge( site.body.head.append ) | default( [] ) %}
 			{{ append | safe }}
 		{% endfor %}
 	</head>
