@@ -4,10 +4,10 @@
 
 {% metagen {
 
-	title: title | default( meta.title ) | default( '' ),
-	url: site.baseUrl + ( page.url | default( '' ) ),
+	title: title | default( meta.title ) | default( '' ) | markdown | striptags,
+	desc: meta.description | markdown | striptags,
 
-	desc: meta.description,
+	url: site.baseUrl + ( page.url | default( '' ) ),
 
 	img: meta.img | default( '' ),
 	img_alt: meta.img_alt | default( site.title ),
