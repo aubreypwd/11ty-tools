@@ -92,7 +92,7 @@ module.exports = function ( eleventyConfig ) {
 				outputDir: required.path.join( config.dir.output, 'assets/img' ),
 				urlPath: '/assets/img',
 				formats: [ 'avif', 'webp', 'jpeg' ],
-				transformOnRequest: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+				transformOnRequest: ( 'build' === process.env.ELEVENTY_RUN_MODE ) ? false : true,
 				useCache: false,
 				widths: [
 					// 320,
@@ -201,8 +201,8 @@ module.exports = function ( eleventyConfig ) {
 							legalComments: 'none', // No license stuff (want to keep it small).
 
 							// Allow debugging at least.
-							minify: ( process.env.ELEVENTY_ENV === 'production' ) ? true : false,
-							sourcemap: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+							minify: ( 'build' === process.env.ELEVENTY_RUN_MODE ) ? true : false,
+							sourcemap: ( 'build' === process.env.ELEVENTY_RUN_MODE ) ? false : true,
 						},
 						config.configs.js?.['build']?.['esbuild'] ?? {}
 					) );
