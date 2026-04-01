@@ -12,6 +12,11 @@
 	<link rel="stylesheet" href="/assets/css/sanitize.css/ui-monospace.css">
 {% endif %}
 
+{# --- 👉 Critical CSS (global) --- #}
+{% if ( 'assets/css/critical.css' | fileExists ) %}
+	<link rel="stylesheet" href="/assets/css/critical.css">
+{% endif %}
+
 {% if not disabled.includes( 'bootstrapGrid' ) %}
 	<link rel="stylesheet" href="/assets/css/boostrap/bootstrap-grid.min.css">
 {% endif %}
@@ -29,8 +34,3 @@
 		<link rel="stylesheet" href="{{ style.href }}" {{ style.attrs | default( '' ) | safe }}>
 	{% endif %}
 {% endfor %}
-
-{# --- 👉 Critical CSS (global) --- #}
-{% if ( 'assets/css/critical.css' | fileExists ) %}
-	<link rel="stylesheet" href="/assets/css/critical.css">
-{% endif %}
