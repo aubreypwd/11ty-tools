@@ -1,6 +1,6 @@
 {%- set meta = site.meta | deepmerge( meta ) | default( {} ) -%}
 
-{% set title %}{% if title %}{{ title }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title }}{% endif %}{% endset %}
+{% set title %}{% if title %}{{ title | markdown | striptags }}{% endif %}{% if site.title and title %} - {% endif %}{% if site.title %}{{ site.title | markdown | striptags }}{% endif %}{% endset %}
 
 {% metagen {
 
