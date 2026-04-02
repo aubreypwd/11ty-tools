@@ -178,12 +178,25 @@ module.exports = function ( eleventyConfig ) {
 	// JS
 	if ( ! config.disabled.includes( 'js' ) ) {
 
+		const esbuildCache = {};
+
 		// JS goes through esbuild so we don't have to worry about what we write.
 		eleventyConfig.addTemplateFormats( 'js' );
 		eleventyConfig.addExtension( 'js', required.deepmerge(
 			{
 				outputFileExtension: 'js',
 				compile: async function ( inputContent, inputPath ) {
+
+					// Create a signature for the file's contents right now.
+					const sig = required.crypto
+						.createHash( 'md5' )
+						.update( inputPath + required.fs.readFileSync( inputPath ) )
+						.digest( 'hex' );
+
+					// If it didn't change, it's contents might be in the cache.
+					if ( Object.hasOwn( esbuildCache, sig ) ) {
+						return async () => esbuildCache[ sig ];
+					}
 
 					// esbuild does the stuff...
 					const esbuild = require( 'esbuild' );
@@ -206,6 +219,9 @@ module.exports = function ( eleventyConfig ) {
 						},
 						config.configs.js?.['build']?.['esbuild'] ?? {}
 					) );
+
+					// Cache this for next time.
+					esbuildCache[ sig ] = result.outputFiles[0].text ?? '';
 
 					// Write the file esbuild gave us.
 					return async () => result.outputFiles[0].text ?? '';
