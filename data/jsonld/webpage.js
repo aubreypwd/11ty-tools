@@ -1,7 +1,8 @@
 const required = require( '@root/required.js' );
 
 module.exports = ( site, overrides = {} ) => {
-	return required.deepmerge(
+
+	const json = required.deepmerge(
 		{
 			'@type': 'WebPage',
 			'@id': `${ site.baseUrl }#WebPage`,
@@ -14,4 +15,11 @@ module.exports = ( site, overrides = {} ) => {
 		},
 		overrides
 	);
+
+	// Make sure @type has no duplicates due to deepmerge.
+	if ( Array.isArray( json['@type'] ) ) {
+		json['@type'] = [ ...new Set( json['@type'] ) ];
+	}
+
+	return json;
 };

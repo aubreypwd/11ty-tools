@@ -28,6 +28,16 @@ module.exports = function ( eleventyConfig ) {
 	// Add a fileExsts nunchuck filter.
 	eleventyConfig.addFilter( 'fileExists', _path => required.fs.existsSync( required.path.resolve( required.path.join( process.cwd(), config.dir.input, _path ) ) ) );
 
+	// Easy way to make array's unique.
+	eleventyConfig.addFilter( 'arrayUnique', function( value ) {
+
+		if ( ! Array.isArray( value ) ) {
+			return value;
+		}
+
+		return [ ...new Set( value ) ];
+	} );
+
 	// Add a way to strip the outer tags of a string, useful for {{ 'content' | markdown | sot | safe }}.
 	eleventyConfig.addFilter( 'sot', function( str ) {
 

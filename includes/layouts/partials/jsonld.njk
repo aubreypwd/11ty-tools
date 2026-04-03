@@ -1,7 +1,7 @@
 {% for key, item in site.jsonld | deepmerge( jsonld ) | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
-		{% if item['@type'] == 'WebPage' %}
-			{% jsonld item['@type'], item['@id'], item, {},
+		{% if item['@type'] == 'WebPage' or 'FAQPage' in item['@type'] %}
+			{% jsonld item['@type'] | arrayUnique, item['@id'], item, {},
 				{
 					name: title,
 					url: site.baseUrl + page.url,
@@ -9,7 +9,7 @@
 				}
 			%}
 		{% else %}
-			{% jsonld item['@type'], item['@id'], item %}
+			{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
 		{% endif %}
 	{% endif %}
 {% endfor %}
