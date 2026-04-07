@@ -1,20 +1,20 @@
 {# Site level JSONLD #}
 {% for key, item in site.jsonld | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
-		{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item, {}, jsonldOverrides[ key ] | default( {} ) %}
 	{% endif %}
 {% endfor %}
 
 {# Base Layout JSONLD #}
 {% for key, item in layouts.base.jsonld | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
-		{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item, {}, jsonldOverrides[ key ] | default( {} ) %}
 	{% endif %}
 {% endfor %}
 
 {# Page level JSONLD #}
 {% for key, item in jsonld | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
-		{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item, {}, jsonldOverrides[ key ] | default( {} ) %}
 	{% endif %}
 {% endfor %}
