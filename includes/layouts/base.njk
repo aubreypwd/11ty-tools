@@ -18,6 +18,9 @@
 		{% for append in body.head.append | deepmerge( site.body.head.append ) | default( [] ) %}
 			{{ append | safe }}
 		{% endfor %}
+
+		{# --- 👉 Appended <head> items via nunchucks: create this file and add your head contents there. --- #}
+		{% include 'head.njk' ignore missing %}
 	</head>
 
 	<body class="{{ site.body.class }} {{ body.class }}">
