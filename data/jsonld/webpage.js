@@ -8,7 +8,7 @@ module.exports = ( site, overrides = {} ) => {
 			'@id': `${ site.baseUrl }#WebPage`,
 			name: '',
 			url: `${ site.baseUrl }#WebPage`,
-			description: '',
+			description: site.meta.description ?? '',
 			inLanguage: site.lang ?? '',
 			isPartOf: { '@id': `${ site.baseUrl }#WebSite` }
 		},
