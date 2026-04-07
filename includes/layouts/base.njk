@@ -18,7 +18,7 @@ const eleventyComputed = {
 							'@id': `${ data.site.baseUrl }${ data.page.url }#WebPage`,
 							url: `${ data.site.baseUrl }${ data.page.url }#WebPage`,
 							name: data.title ?? '',
-							description: data.meta?.description ?? '',
+							description: data.meta?.description ?? data.site?.meta?.description ?? '',
 						}
 					)
 				}
@@ -39,8 +39,8 @@ const eleventyComputed = {
 		{% include '11ty-starter-common/includes/layouts/partials/styles.njk' %}
 		{% include '11ty-starter-common/includes/layouts/partials/scripts.head.njk' %}
 
-		{# --- 👉 Appended <head> items --- #}
-		{% for append in body.head.append | deepmerge( site.body.head.append ) | default( [] ) %}
+		{# --- 👉 Appended <head> items (note: no deepmerge necessary here) --- #}
+		{% for append in body.head.append | default( [] ) %}
 			{{ append | safe }}
 		{% endfor %}
 
