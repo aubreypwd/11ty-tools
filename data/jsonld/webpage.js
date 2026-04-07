@@ -10,8 +10,7 @@ module.exports = ( site, overrides = {} ) => {
 			url: `${ site.baseUrl }#WebPage`,
 			description: '',
 			inLanguage: site.lang ?? '',
-			isPartOf: { '@id': `${ site.baseUrl }#WebSite` },
-			about: { '@id': `${ site.baseUrl }#LocalBusiness` }
+			isPartOf: { '@id': `${ site.baseUrl }#WebSite` }
 		},
 		overrides
 	);
