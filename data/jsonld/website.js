@@ -6,6 +6,7 @@ module.exports = ( site, overrides = {} ) => {
 			'@type': 'WebSite',
 			'@id': `${ site.baseUrl }#WebSite`,
 			name: site.title ?? '',
+			description: site.meta.description ?? '',
 			url: `${ site.baseUrl }`,
 			inLanguage: site.lang ?? 'en-US'
 		},
