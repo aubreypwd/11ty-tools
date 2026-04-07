@@ -2,6 +2,9 @@
 import webpageModule from './src/_includes/11ty-starter-common/data/jsonld/webpage.js';
 	const webpageJsonLD = webpageModule.default ?? webpageModule;
 
+	import deepmergeModule from 'deepmerge';
+const deepmerge = deepmergeModule.default ?? deepmergeModule;
+
 const markdown = true;
 
 const eleventyComputed = {
@@ -9,17 +12,14 @@ const eleventyComputed = {
 		base: {
 			jsonld: ( data ) => (
 				{
-					WebPage: Object.assign(
-						data.jsonld?.WebPage ?? {},
-						webpageJsonLD(
-							data.site,
-							{
-								'@id': `${ data.site.baseUrl }${ data.page.url }#WebPage`,
-								url: `${ data.site.baseUrl }${ data.page.url }#WebPage`,
-								name: data.title ?? '',
-								description: data.meta?.description ?? '',
-							}
-						)
+					WebPage: webpageJsonLD(
+						data.site,
+						{
+							'@id': `${ data.site.baseUrl }${ data.page.url }#WebPage`,
+							url: `${ data.site.baseUrl }${ data.page.url }#WebPage`,
+							name: data.title ?? '',
+							description: data.meta?.description ?? '',
+						}
 					)
 				}
 			)
