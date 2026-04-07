@@ -1,15 +1,20 @@
-{% for key, item in site.jsonld | deepmerge( jsonld ) | default( {} ) %}
+{# Site level JSONLD #}
+{% for key, item in site.jsonld | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
-		{% if item['@type'] == 'WebPage' or 'FAQPage' in item['@type'] %}
-			{% jsonld item['@type'] | arrayUnique, item['@id'], item, {},
-				{
-					name: title,
-					url: site.baseUrl + page.url,
-					description: description
-				}
-			%}
-		{% else %}
-			{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
-		{% endif %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
+	{% endif %}
+{% endfor %}
+
+{# Base Layout JSONLD #}
+{% for key, item in layouts.base.jsonld | default( {} ) %}
+	{% if item and item['@type'] and item['@id'] %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
+	{% endif %}
+{% endfor %}
+
+{# Page level JSONLD #}
+{% for key, item in jsonld | default( {} ) %}
+	{% if item and item['@type'] and item['@id'] %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item %}
 	{% endif %}
 {% endfor %}
