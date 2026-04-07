@@ -17,6 +17,14 @@ module.exports = ( eleventyConfig ) => eleventyConfig.addAsyncShortcode( 'jsonld
 		overrides
 	);
 
+	// Also set default options.
+	options = required.deepmerge(
+		{
+			validate: true,
+		},
+		options
+	);
+
 	const validate = ( options.validate ?? true ) && [
 
 		// These are the only one's we can validate ATM.
