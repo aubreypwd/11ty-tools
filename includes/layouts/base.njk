@@ -2,9 +2,6 @@
 import webpageModule from './src/_includes/11ty-starter-common/data/jsonld/webpage.js';
 	const webpageJsonLD = webpageModule.default ?? webpageModule;
 
-	import deepmergeModule from 'deepmerge';
-const deepmerge = deepmergeModule.default ?? deepmergeModule;
-
 const markdown = true;
 
 const eleventyComputed = {
@@ -28,6 +25,8 @@ const eleventyComputed = {
 };
 ---
 
+{%- set body = site.body | deepmerge( body ) | default( {} ) -%}
+
 <!DOCTYPE html>
 <html lang="{{ site.lang or 'en-US' }}">
 	<head>
@@ -48,8 +47,8 @@ const eleventyComputed = {
 		{% include 'head.njk' ignore missing %}
 	</head>
 
-	<body class="{{ site.body.class }} {{ body.class }}">
-		<main class="{{ site.body.main.class }} {{ body.main.class }}">
+	<body class="{{ body.class }}">
+		<main class="{{ body.main.class }}">
 			{% if content %}
 				{% if markdown != false %}
 					{{ content | markdown | safe }}

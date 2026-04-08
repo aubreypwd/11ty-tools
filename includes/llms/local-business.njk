@@ -10,7 +10,7 @@ Service areas: {{ site.jsonld.LocalBusiness.areaServed }}{% endif %}{% if site.j
 Primary audience: {{ site.jsonld.Person.knowsAbout | join(", ") }}{% endif %}{% if site.jsonld.LocalBusiness.openingHours and site.jsonld.LocalBusiness.openingHours | length %}
 Hours: {{ site.jsonld.LocalBusiness.openingHours | join("; ") }}{% endif %}
 
-{%- for sectionName, section in llms | deepmerge( site.llms ) %}
+{%- for sectionName, section in llms %}
 {%- if section.links and section.links | length %}
 
 ## {{ sectionName }}

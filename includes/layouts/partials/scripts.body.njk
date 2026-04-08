@@ -7,7 +7,7 @@
 	</script>
 {% endif %}
 
-{% for key, script in site.body.js.scripts | deepmerge( body.js.scripts ) | default( {} ) %}
+{% for key, script in body.js.scripts | default( {} ) %}
 	{% if script.src and script.inline %}
 		<script type="text/javascript" {{ script.attrs | default( '' ) | safe }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
 	{% elif script.src %}
