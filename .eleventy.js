@@ -148,6 +148,10 @@ module.exports = function ( eleventyConfig ) {
 
 			for ( const file of files ) {
 
+				if ( '.DS_Store' === file ) {
+					continue;
+				}
+
 				const inputPath = required.path.join( inputDir, file );
 
 				await Image(
