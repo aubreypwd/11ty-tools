@@ -23,7 +23,7 @@ module.exports = function ( eleventyConfig ) {
 	);
 
 	// Add a markdown filter.
-	eleventyConfig.addFilter( 'markdown', ( content, options = { args: { html: true }, disable: [ 'code' ] } ) => new markdownIt( options.args ).disable( options.disable ?? [] ).render( String( content ) ) );
+	eleventyConfig.addFilter( 'markdown', ( content, options = { disable: [ 'code' ] }, markdownItArgs = { html: true } ) => new markdownIt( markdownItArgs ).disable( options.disable ?? [] ).render( String( content ) ) );
 
 	// Add a fileExsts nunchuck filter.
 	eleventyConfig.addFilter( 'fileExists', _path => required.fs.existsSync( required.path.resolve( required.path.join( process.cwd(), config.dir.input, _path ) ) ) );
