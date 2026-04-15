@@ -1,0 +1,7 @@
+{% for key, script in body.head.js.scripts | default( {} ) %}
+	{% if script.src and script.inline %}
+		<script type="text/javascript" {{ script.attrs | default( '' ) | safe }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
+	{% elif script.src %}
+		<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) | safe }}></script>
+	{% endif %}
+{% endfor %}

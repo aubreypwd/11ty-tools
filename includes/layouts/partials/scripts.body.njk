@@ -1,0 +1,21 @@
+{% set disabled = site.disabled | default( [] ) %}
+
+{# --- 👉 Always load bundled js in the body --- #}
+{% if not disabled.includes( 'bundle' ) %}
+	<script type="text/javascript">
+		{% getBundle 'js' %}
+	</script>
+{% endif %}
+
+{% for key, script in body.js.scripts | default( {} ) %}
+	{% if script.src and script.inline %}
+		<script type="text/javascript" {{ script.attrs | default( '' ) | safe }}>{% readfile script.src | replace( '/assets/', 'assets/' ) %}</script>
+	{% elif script.src %}
+		<script type="text/javascript" src="{{ script.src }}" {{ script.attrs | default( '' ) | safe }}></script>
+	{% endif %}
+{% endfor %}
+
+{# --- 👉 main.js --- #}
+{% if ( 'assets/js/main.js' | fileExists ) %}
+	<script src="/assets/js/main.js" {{ body.js.main.attrs | default( '' ) | safe }}></script>
+{% endif %}

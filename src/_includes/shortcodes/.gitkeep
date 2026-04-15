@@ -1,9 +1,0 @@
-This directory is for project-local Eleventy shortcodes.
-
-Any `.js` file placed here, or in a subdirectory here, is auto-loaded by
-`src/_includes/11ty-starter-common/.eleventy.js` and can register shortcodes
-with `eleventyConfig`.
-
-Example:
-`src/_includes/shortcodes/card.js`
-`src/_includes/shortcodes/sections/sectionHeader.js`
