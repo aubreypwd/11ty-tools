@@ -26,7 +26,7 @@
 {% if not disabled.includes( 'bundle' ) %}
 	<style>{% getBundle "css" %}</style>
 {% endif %}
-% for key, style in body.head.styles | default( {} ) %}
+{% for key, style in body.head.styles | default( {} ) %}
 	{% if style.href and style.inline %}
 		<style>{% readfile style.href | replace( '/assets/', 'assets/' ) %}</style>
 	{% elif style.href %}
