@@ -1,16 +1,20 @@
-{%- set jsonld = site.jsonld | deepmerge( jsonld ) -%}
-{% for key, item in jsonld %}
+{# Site level JSONLD #}
+{% for key, item in site.jsonld | default( {} ) %}
 	{% if item and item['@type'] and item['@id'] %}
-		{% if item['@type'] == 'WebPage' %}
-			{% jsonld item['@type'], item['@id'], item, {},
-				{
-					name: title,
-					url: site.baseUrl + page.url,
-					description: description
-				}
-			%}
-		{% else %}
-			{% jsonld item['@type'], item['@id'], item %}
-		{% endif %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item, {}, jsonldOverrides[ key ] | default( {} ) %}
+	{% endif %}
+{% endfor %}
+
+{# Base Layout JSONLD #}
+{% for key, item in layouts.base.jsonld | default( {} ) %}
+	{% if item and item['@type'] and item['@id'] %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item, {}, jsonldOverrides[ key ] | default( {} ) %}
+	{% endif %}
+{% endfor %}
+
+{# Page level JSONLD #}
+{% for key, item in jsonld | default( {} ) %}
+	{% if item and item['@type'] and item['@id'] %}
+		{% jsonld item['@type'] | arrayUnique, item['@id'], item, {}, jsonldOverrides[ key ] | default( {} ) %}
 	{% endif %}
 {% endfor %}

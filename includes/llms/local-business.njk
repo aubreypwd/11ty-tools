@@ -1,6 +1,6 @@
 # {{ site.jsonld.LocalBusiness.name | default( site.title ) }}
 
-> {{ site.jsonld.LocalBusiness.description | default( site.meta.desc ) }}.
+> {{ site.jsonld.LocalBusiness.description | default( site.meta.description ) }}.
 
 Booking / contact: {{ site.baseUrl }}#contact
 {% if site.jsonld.LocalBusiness.address and (site.jsonld.LocalBusiness.address.streetAddress or site.jsonld.LocalBusiness.address.addressLocality) %}
@@ -10,11 +10,11 @@ Service areas: {{ site.jsonld.LocalBusiness.areaServed }}{% endif %}{% if site.j
 Primary audience: {{ site.jsonld.Person.knowsAbout | join(", ") }}{% endif %}{% if site.jsonld.LocalBusiness.openingHours and site.jsonld.LocalBusiness.openingHours | length %}
 Hours: {{ site.jsonld.LocalBusiness.openingHours | join("; ") }}{% endif %}
 
-{%- for sectionName, section in site.llms %}
+{%- for sectionName, section in llms %}
 {%- if section.links and section.links | length %}
 
 ## {{ sectionName }}
-{% for link in section.links -%}
+{% for link in section.links %}
 - [{{ link.label }}]({{ link.href }}): {{ link.description }}
 {%- endfor %}
 {%- endif %}

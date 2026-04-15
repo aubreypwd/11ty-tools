@@ -23,10 +23,20 @@ module.exports = function ( eleventyConfig ) {
 	);
 
 	// Add a markdown filter.
-	eleventyConfig.addFilter( 'markdown', content => new markdownIt( { html: true } ).render( String( content ) ) );
+	eleventyConfig.addFilter( 'markdown', ( content, options = { disable: [ 'code' ] }, markdownItArgs = { html: true } ) => new markdownIt( markdownItArgs ).disable( options.disable ?? [] ).render( String( content ) ) );
 
 	// Add a fileExsts nunchuck filter.
 	eleventyConfig.addFilter( 'fileExists', _path => required.fs.existsSync( required.path.resolve( required.path.join( process.cwd(), config.dir.input, _path ) ) ) );
+
+	// Easy way to make array's unique.
+	eleventyConfig.addFilter( 'arrayUnique', function( value ) {
+
+		if ( ! Array.isArray( value ) ) {
+			return value;
+		}
+
+		return [ ...new Set( value ) ];
+	} );
 
 	// Add a way to strip the outer tags of a string, useful for {{ 'content' | markdown | sot | safe }}.
 	eleventyConfig.addFilter( 'sot', function( str ) {
@@ -92,7 +102,7 @@ module.exports = function ( eleventyConfig ) {
 				outputDir: required.path.join( config.dir.output, 'assets/img' ),
 				urlPath: '/assets/img',
 				formats: [ 'avif', 'webp', 'jpeg' ],
-				transformOnRequest: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+				transformOnRequest: ( 'build' === process.env.ELEVENTY_RUN_MODE ) ? false : true,
 				useCache: false,
 				widths: [
 					// 320,
@@ -138,6 +148,10 @@ module.exports = function ( eleventyConfig ) {
 
 			for ( const file of files ) {
 
+				if ( '.DS_Store' === file ) {
+					continue;
+				}
+
 				const inputPath = required.path.join( inputDir, file );
 
 				await Image(
@@ -178,12 +192,25 @@ module.exports = function ( eleventyConfig ) {
 	// JS
 	if ( ! config.disabled.includes( 'js' ) ) {
 
+		const esbuildCache = {};
+
 		// JS goes through esbuild so we don't have to worry about what we write.
 		eleventyConfig.addTemplateFormats( 'js' );
 		eleventyConfig.addExtension( 'js', required.deepmerge(
 			{
 				outputFileExtension: 'js',
 				compile: async function ( inputContent, inputPath ) {
+
+					// Create a signature for the file's contents right now.
+					const sig = required.crypto
+						.createHash( 'md5' )
+						.update( inputPath + required.fs.readFileSync( inputPath ) )
+						.digest( 'hex' );
+
+					// If it didn't change, it's contents might be in the cache.
+					if ( Object.hasOwn( esbuildCache, sig ) ) {
+						return async () => esbuildCache[ sig ];
+					}
 
 					// esbuild does the stuff...
 					const esbuild = require( 'esbuild' );
@@ -201,11 +228,14 @@ module.exports = function ( eleventyConfig ) {
 							legalComments: 'none', // No license stuff (want to keep it small).
 
 							// Allow debugging at least.
-							minify: ( process.env.ELEVENTY_ENV === 'production' ) ? true : false,
-							sourcemap: ( process.env.ELEVENTY_ENV === 'production' ) ? false : true,
+							minify: ( 'build' === process.env.ELEVENTY_RUN_MODE ) ? true : false,
+							sourcemap: ( 'build' === process.env.ELEVENTY_RUN_MODE ) ? false : true,
 						},
 						config.configs.js?.['build']?.['esbuild'] ?? {}
 					) );
+
+					// Cache this for next time.
+					esbuildCache[ sig ] = result.outputFiles[0].text ?? '';
 
 					// Write the file esbuild gave us.
 					return async () => result.outputFiles[0].text ?? '';
@@ -415,6 +445,20 @@ module.exports = function ( eleventyConfig ) {
 			required.fs.writeFileSync( sigFile, shorcodeSignature );
 		} );
 	} );
+
+	// Auto-load anything in src/_includes/shortcodes/**.js
+	const localShortcodesDir = required.path.join( process.cwd(), config.dir.input, config.dir.includes, '/shortcodes/' );
+
+	if ( required.fs.existsSync( localShortcodesDir ) ) {
+		required.fs.readdirSync(
+			localShortcodesDir, { recursive: true } )
+				.filter( file => file.endsWith( '.js' ) )
+				.map( file => required.path.join( localShortcodesDir, file ) )
+				.forEach( shortcode => {
+					console.log( `[11ty-starter-common] Loaded ${ shortcode }.`);
+					require( shortcode )( eleventyConfig );
+				} );
+	}
 
 	// Base config that is used in 11ty-starter.
 	return config;

@@ -1,7 +1,3 @@
-{% set disabled = site.disabled | default( [] ) %}
-
-{% if ( not disabled.includes( 'eleventyGoogleFonts' ) ) and ( body.head.google.fonts | default( [] ) | length ) %}
-	{% for href in body.head.google.fonts %}
-		{% eleventyGoogleFonts href %}
-	{% endfor %}
-{% endif %}
+{% for href in body.head.google.fonts | default( [] ) %}
+	{% eleventyGoogleFonts href %}
+{% endfor %}
