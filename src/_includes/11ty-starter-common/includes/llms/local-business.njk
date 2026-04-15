@@ -1,0 +1,21 @@
+# {{ site.jsonld.LocalBusiness.name | default( site.title ) }}
+
+> {{ site.jsonld.LocalBusiness.description | default( site.meta.description ) }}.
+
+Booking / contact: {{ site.baseUrl }}#contact
+{% if site.jsonld.LocalBusiness.address and (site.jsonld.LocalBusiness.address.streetAddress or site.jsonld.LocalBusiness.address.addressLocality) %}
+Primary location: {{ site.jsonld.LocalBusiness.address.streetAddress or "Unknown address" }}{% if site.jsonld.LocalBusiness.address.addressLocality %}, {{ site.jsonld.LocalBusiness.address.addressLocality }}{% endif %}{% if site.jsonld.LocalBusiness.address.addressRegion %}, {{ site.jsonld.LocalBusiness.address.addressRegion }}{% endif %}{% if site.jsonld.LocalBusiness.address.postalCode %} {{ site.jsonld.LocalBusiness.address.postalCode }}{% endif %}{% endif %}{% if site.jsonld.LocalBusiness.telephone %}
+Phone: {{ site.jsonld.LocalBusiness.telephone }}{% endif %}{% if site.jsonld.LocalBusiness.areaServed %}
+Service areas: {{ site.jsonld.LocalBusiness.areaServed }}{% endif %}{% if site.jsonld.Person.knowsAbout and site.jsonld.Person.knowsAbout | length %}
+Primary audience: {{ site.jsonld.Person.knowsAbout | join(", ") }}{% endif %}{% if site.jsonld.LocalBusiness.openingHours and site.jsonld.LocalBusiness.openingHours | length %}
+Hours: {{ site.jsonld.LocalBusiness.openingHours | join("; ") }}{% endif %}
+
+{%- for sectionName, section in llms %}
+{%- if section.links and section.links | length %}
+
+## {{ sectionName }}
+{% for link in section.links %}
+- [{{ link.label }}]({{ link.href }}): {{ link.description }}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}

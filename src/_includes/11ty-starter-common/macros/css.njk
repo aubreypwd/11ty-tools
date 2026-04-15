@@ -1,0 +1,11 @@
+{% macro css( css ) %}
+
+	{% for css in css.links %}
+		<link rel="stylesheet" href="{{ css.href }}" {{ css.attrs | default( '' ) | safe }}>
+	{% endfor %}
+
+	{% for css in css.inline %}
+		<style>{{ css | safe }}</style>
+	{% endfor %}
+
+{% endmacro %}

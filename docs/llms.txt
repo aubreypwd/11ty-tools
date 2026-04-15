@@ -1,0 +1,12 @@
+# Site Title
+
+> Site description.
+
+Booking / contact: https://example.com#contact
+
+Primary location: 123 Example Street, City A, State A 00000
+Phone: +15555550000
+Service areas: Region A
+Primary audience: Topic A, Topic B, Topic C
+Hours: Mo-Fr 08:00-18:00; Sa 09:00-14:00
+

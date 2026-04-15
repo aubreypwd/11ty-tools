@@ -1,0 +1,9 @@
+[build]
+  command = "npx @11ty/eleventy"
+  publish = "docs/"
+[dev]
+  framework = "#custom"
+  command = "npm run serve"
+  targetPort = 8084
+  port = 8877
+  publish = "docs/"

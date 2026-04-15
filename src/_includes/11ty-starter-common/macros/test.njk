@@ -1,0 +1,4 @@
+{% macro test( label ) %}
+	<p><strong>{{ label }}</strong></p>
+	<p>{{ caller() | trim | markdown | safe }}</p>
+{% endmacro %}
