@@ -50,7 +50,7 @@ const eleventyComputed = {
 	<body class="{{ body.class }}">
 		<main class="{{ body.main.class }}">
 
-		
+
 			{% if content %}
 				{% if markdown != false %}
 					{{ content | markdown | safe }}
@@ -61,7 +61,8 @@ const eleventyComputed = {
 		</main>
 
 		{% include '11ty-starter-common/includes/layouts/partials/scripts.body.njk' %}
-	{# --- 👉 Appended <body> items via nunchucks: create _includes/body.njk and add your contents there. --- #}
+
+		{# --- 👉 Appended <body> items via nunchucks: create _includes/body.njk and add your contents there. --- #}
 		{% include 'body.njk' ignore missing %}
 	</body>
 </html>
