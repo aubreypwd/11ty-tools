@@ -3,7 +3,7 @@ const required = require( '@root/required.js' );
 // Change stuff here first.
 const site = require( '../../../src/_data/site.js' );
 
-module.exports = function ( eleventyConfig ) {
+module.exports = async function ( eleventyConfig ) {
 
 	// Main config (you can overide these in 11ty-starter).
 	const config = required.deepmerge(
@@ -210,7 +210,7 @@ module.exports = function ( eleventyConfig ) {
 	// Add support for simple bundling.
 	if ( ! config.disabled.includes( 'bundle' ) ) {
 
-		const { EleventyRenderPlugin } = require( '@11ty/eleventy' );
+		const { EleventyRenderPlugin } = await import( '@11ty/eleventy' );
 		eleventyConfig.addPlugin( EleventyRenderPlugin, config.configs.bundle?.['addPlugin']?.['EleventyRenderPlugin'] ?? {} );
 
 		eleventyConfig.addBundle( 'js', config.configs.bundle?.['addBundle']?.['js'] ?? {} );
